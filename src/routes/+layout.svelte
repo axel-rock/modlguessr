@@ -19,6 +19,7 @@
 	</h1>
 	<nav>
 		<a href="/leaderboard">Leaderboard</a>
+		<a href="/about">About</a>
 		<a href="/blog">Devblog</a>
 	</nav>
 </header>
