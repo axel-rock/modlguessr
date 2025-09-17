@@ -1,0 +1,115 @@
+/* Buttons */
+:is(button:not(.link), [role='button'], input[type='submit'], .button, label, .label) {
+	align-items: center;
+	color: var(--grey-700);
+	background-color: transparent;
+
+	font-size: 1rem;
+	font-weight: 400;
+	letter-spacing: -0.02em;
+
+	appearance: none;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	cursor: pointer;
+	display: grid;
+	gap: 0.5rem;
+	text-decoration: none;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	outline-color: color-mix(in oklab, var(--brand) 90%, transparent);
+
+	&:not(label, .label) {
+		min-height: 2.5rem;
+		padding-inline: 1rem;
+		border-radius: 0;
+		overflow: hidden;
+	}
+
+	&.medium {
+		padding: 6px 0.75rem;
+	}
+
+	&.small {
+		padding: 5px 8px;
+		font-size: 0.75rem;
+		height: 1.75rem;
+	}
+
+	&[aria-disabled='true'],
+	&[disabled] {
+		color: var(--grey-500);
+		box-shadow: none;
+		& > svg > path {
+			fill: var(--grey-500);
+		}
+	}
+
+	&:is([aria-disabled='true'], [disabled]):not(.tertiary) {
+		border: 1px solid var(--grey-100);
+	}
+
+	&.primary {
+		background: var(--brand);
+		color: var(--brand-contrast);
+	}
+	&.primary:is(:hover, .active) {
+		background: color-mix(in oklab, var(--brand) 90%, transparent);
+		color: var(--brand-contrast);
+	}
+	&.primary:is([aria-disabled='true'], [disabled]) {
+		background: var(--brand);
+	}
+	&.primary > svg > path {
+		fill: var(--grey-0);
+	}
+
+	&.secondary {
+		color: var(--grey-700);
+		background: var(--grey-0);
+		transition: all 0.1s ease;
+	}
+	&.secondary:is(:hover, .active) {
+		background: var(--grey-0);
+	}
+
+	&.tertiary {
+		color: var(--grey-700);
+		background: var(--grey-50);
+	}
+
+	&.contrast {
+		color: var(--grey-0);
+		background: var(--grey-900);
+	}
+	&.contrast:is(:hover, .active) {
+		color: var(--grey-0);
+		background: var(--grey-700) !important;
+	}
+
+	&.danger {
+		color: var(--red);
+		/* background-color: color-mix(in oklab, var(--red) 5%, transparent); */
+	}
+
+	&.icon {
+		aspect-ratio: 1;
+		justify-content: center;
+		border-radius: 50%;
+		padding: unset;
+	}
+
+	&.active {
+		color: var(--brand);
+		background-color: color-mix(in oklab, var(--brand) 5%, transparent);
+
+		&:is(:hover, :focus) {
+			background-color: color-mix(in oklab, var(--brand) 10%, transparent);
+
+			&:focus {
+				border: solid 1px var(--brand);
+			}
+		}
+	}
+}

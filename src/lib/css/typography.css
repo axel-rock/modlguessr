@@ -1,0 +1,186 @@
+/* @supports (font-variation-settings: normal) {
+	:root {
+		font-family: InterVariable, sans-serif;
+	}
+} */
+
+html {
+	hanging-punctuation: first last;
+	font-size: clamp(16px, 2vw, 18px);
+	/* font-size: clamp(16px, 2vw, 22px); */
+	font-family:
+		Inter,
+		SF Pro Text,
+		SF Pro Icons,
+		Helvetica Neue,
+		Helvetica,
+		Arial,
+		sans-serif;
+	font-optical-sizing: auto;
+	text-rendering: optimizelegibility;
+	-webkit-font-smoothing: antialiased;
+	font-feature-settings:
+		'liga' 1,
+		'calt' 1,
+		'ss08' 1,
+		'calt' 1,
+		'ss03' 1,
+		'cv01' 1,
+		'cv04' 1; /* fix for Chrome */
+}
+
+:not(header, nav) {
+	/* Common heading styles */
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		margin-top: 0;
+		line-height: 1.2;
+		color: var(--grey-800);
+	}
+
+	/* Individual heading styles with fluid typography */
+	h1 {
+		font-size: 3.5rem;
+		line-height: 1.1;
+		font-weight: 500;
+		letter-spacing: -0.03em;
+	}
+
+	h2 {
+		font-size: 2rem;
+		line-height: 1.05;
+		font-weight: 500;
+		letter-spacing: -0.0125em;
+	}
+
+	h3 {
+		font-size: 2rem;
+		line-height: 1.05;
+		font-weight: 500;
+		letter-spacing: -0.0125em;
+	}
+
+	h4 {
+		font-size: 2rem;
+		line-height: 1.2;
+		font-weight: 500;
+		letter-spacing: 0.015em;
+	}
+}
+
+header,
+nav {
+	h1,
+	h2,
+	h3,
+	h4 {
+		font-size: 1rem;
+		font-weight: 400;
+		letter-spacing: -0.02em;
+		padding: 0;
+		margin: 0;
+		line-height: 1.5em;
+		text-wrap: balance;
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+
+		& > a {
+			color: inherit;
+			font-size: inherit;
+			font-weight: inherit;
+		}
+	}
+}
+
+p,
+.p {
+	max-width: 85ch;
+	line-height: 1.4211;
+	/* letter-spacing: 0.012em; */
+}
+
+.message p {
+	/* margin-block: 0.125rem; */
+	margin-block: 0.5rem;
+}
+
+hr {
+	height: 1px;
+	border: 0;
+	background-color: var(--grey-100);
+	margin: 1.5rem 0;
+}
+
+/* Links */
+a,
+[role='link'],
+.link {
+	outline: none;
+	appearance: none;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	cursor: pointer;
+	padding: 0;
+	background-color: transparent;
+	color: var(--grey-700);
+	text-decoration: none;
+	font-size: 1rem;
+	font-weight: 400;
+	letter-spacing: -0.02em;
+
+	transition:
+		background-color var(--transition),
+		color var(--transition),
+		text-decoration var(--transition),
+		box-shadow var(--transition);
+
+	&.active {
+		color: var(--grey-950);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.25em;
+	}
+
+	&:is([aria-current], :hover, :active, :focus) {
+		color: var(--brand);
+		--text-decoration: underline;
+	}
+
+	&:focus {
+		background: color-mix(in oklab, var(--brand) 10%, transparent);
+	}
+
+	&.secondary {
+		color: var(--secondary);
+
+		&:is([aria-current], :hover, :active, :focus) {
+			color: var(--secondary-700);
+		}
+
+		&:focus {
+			background: var(--secondary-700);
+		}
+	}
+
+	&.contrast {
+		color: var(--contrast);
+
+		&:is([aria-current], :hover, :active, :focus) {
+			color: var(--contrast-700);
+		}
+
+		&:focus {
+			background: var(--contrast-700);
+		}
+	}
+}
+
+strong {
+	font-weight: 600;
+}

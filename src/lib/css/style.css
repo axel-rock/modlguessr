@@ -1,0 +1,51 @@
+@import './reset.css';
+@import './layout.css';
+/* @import './wrapper.css'; */
+/* @import './nav.css'; */
+@import './colors.css';
+@import './typography.css';
+/* @import './document.css'; */
+@import './form.css';
+@import './button.css';
+@import './table.css';
+@import './utils.css';
+/* @import './tiles.css'; */
+/* @import './dialog.css'; */
+/* @import './hotkey.css'; */
+/* @import './mask.css'; */
+/* @import './shadow.css'; */
+/* @import './alert.css'; */
+
+:root {
+	/* Colors */
+	--brand: #f15a22;
+	--brand-contrast: #fff;
+	--narrow-page: 80ch;
+
+	background-color: var(--grey-0);
+	color: var(--grey-800);
+
+	color-scheme: light dark;
+}
+
+html {
+	overscroll-behavior-y: none;
+}
+
+body > div > main {
+	h1.hero {
+		font-weight: 500;
+		letter-spacing: -0.02em;
+		font-size: 4rem;
+		margin-block: 4rem;
+	}
+
+	h2.hero {
+		margin-bottom: 1rem;
+		opacity: 0.3;
+	}
+}
+
+pre {
+	white-space: pre-wrap;
+}
