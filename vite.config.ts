@@ -5,7 +5,7 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	server: {
 		fs: {
-			allow: [searchForWorkspaceRoot(process.cwd()), '/README.md'],
+			allow: [searchForWorkspaceRoot(process.cwd()), '/README.md', 'convex'],
 		},
 	},
 })

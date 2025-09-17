@@ -1,13 +1,13 @@
-// See https://svelte.dev/docs/kit/types#app.d.ts
-
 import type { ConvexHttpClient } from 'convex/browser'
+import type { Session, User } from 'better-auth'
 
-// for information about these interfaces
 declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
 			convex: ConvexHttpClient
+			session: Session | null
+			user: User | null
 		}
 		// interface PageData {}
 		// interface PageState {}

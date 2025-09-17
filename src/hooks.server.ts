@@ -4,6 +4,7 @@ import { createConvexHttpClient } from '@mmailaender/convex-better-auth-svelte/s
 import { sequence } from '@sveltejs/kit/hooks'
 
 const convex: Handle = async ({ event, resolve }) => {
+	// @ts-expect-error Version mismatch with current version of convex-better-auth-svelte
 	event.locals.convex = createConvexHttpClient({
 		cookies: event.cookies,
 		convexUrl: PUBLIC_CONVEX_URL,

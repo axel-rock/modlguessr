@@ -3,14 +3,10 @@
 	import { api } from '$convex/api'
 	import { useQuery } from 'convex-svelte'
 
-	let { data } = $props()
+	// let { data } = $props()
 
 	const messages = useQuery(api.messages.list, {})
 </script>
-
-<h1>ModlGuessr</h1>
-
-<p><a href="https://www.convex.dev/hackathons/modernstack">Modern Stack Hackathon</a></p>
 
 {#await messages then messages}
 	{#each messages.data ?? [] as message}

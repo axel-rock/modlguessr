@@ -26,9 +26,11 @@ Change
 To
 
 ```
-		"dev": "concurrently \"vite dev --host\" \"pnpx convex dev\"",
+		"dev": "concurrently --names 'svelte,convex' --prefix-colors \"#f96743,#F3B01C\" \"vite dev --host\" \"pnpx convex dev\"",,
 		"dev:vite": "vite dev --host",
 		"dev:convex": "pnpx convex dev",
 ```
 
 Tadaam, now I just need to run `pnpm dev` to get both SvelteKit and Convex to run in a single terminal window.
+
+PS: Used Svelte's Orange and Convex's yellow
