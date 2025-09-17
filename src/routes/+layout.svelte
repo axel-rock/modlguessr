@@ -80,6 +80,13 @@
 
 <footer>
 	<div class="tools">
+		<span>Source code:</span>
+		<a href="https://github.com/axel-rock/modlguessr" target="_blank">
+			<img src="/logo/github.svg" alt="GitHub" />
+			<span>GitHub</span>
+		</a>
+	</div>
+	<div class="tools">
 		<span>Powered by:</span>
 		<a href="https://svelte.dev/" target="_blank">
 			<img src="/logo/svelte.svg" alt="Svelte" />
@@ -163,41 +170,51 @@
 		}
 	}
 
-	.tools {
-		--icon-size: 1.75rem;
+	footer {
 		display: grid;
-		grid-template-columns: var(--icon-size) 1fr;
-		gap: 0.25rem;
-		align-items: center;
-		font-size: 0.85rem;
+		grid-template-columns: auto auto;
+		align-items: start;
+		justify-content: space-evenly;
+		gap: 1rem;
 
-		& > span {
-			grid-column: 1 / -1;
-		}
+		background-color: var(--grey-50);
 
-		a {
+		.tools {
+			--icon-size: 1.75rem;
 			display: grid;
-			grid-column: 1 / -1;
-			grid-template-columns: subgrid;
+			grid-template-columns: var(--icon-size) 1fr;
+			gap: 0.25rem;
 			align-items: center;
 			font-size: 0.85rem;
 
-			/* Invert images in dark mode */
-
-			img {
-				width: 100%;
-				aspect-ratio: 1;
-				object-fit: contain;
-				justify-self: center;
+			& > span {
+				grid-column: 1 / -1;
 			}
 
-			&[href*='vercel'] img {
-				scale: 0.66;
-			}
+			a {
+				display: grid;
+				grid-column: 1 / -1;
+				grid-template-columns: subgrid;
+				align-items: center;
+				font-size: 0.85rem;
 
-			@media (prefers-color-scheme: dark) {
-				&:is([href*='vercel'], [href*='better-auth']) img {
-					filter: invert(1);
+				/* Invert images in dark mode */
+
+				img {
+					width: 100%;
+					aspect-ratio: 1;
+					object-fit: contain;
+					justify-self: center;
+				}
+
+				&[href*='vercel'] img {
+					scale: 0.66;
+				}
+
+				@media (prefers-color-scheme: dark) {
+					&:is([href*='vercel'], [href*='better-auth']) img {
+						filter: invert(1);
+					}
 				}
 			}
 		}
