@@ -33,4 +33,6 @@ To
 
 Tadaam, now I just need to run `pnpm dev` to get both SvelteKit and Convex to run in a single terminal window.
 
-PS: Used Svelte's Orange and Convex's yellow
+![](/images/blog/svelte-convex-console.png)
+
+PS: And yes, these hex codes are Svelte's Orange and Convex's yellow.

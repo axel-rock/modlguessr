@@ -23,7 +23,9 @@ export const load = (async () => {
 }) satisfies LayoutLoad
 
 function mapPosts(posts: Record<string, any>) {
-	return Promise.all(Object.entries(posts).map(mapPost))
+	return Promise.all(Object.entries(posts).map(mapPost)).then((posts) =>
+		posts.sort((a, b) => b.date.getTime() - a.date.getTime())
+	)
 }
 
 async function mapPost([path, post]: [string, any]) {

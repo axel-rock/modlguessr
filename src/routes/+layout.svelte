@@ -92,7 +92,7 @@
 			<img src="/logo/svelte.svg" alt="Svelte" />
 			<span>SvelteKit</span></a
 		>
-		<a href="https://www.convex.dev/" target="_blank">
+		<a href="https://convex.dev/referral/AXELRO9828" target="_blank">
 			<img src="/logo/convex.svg" alt="Convex" />
 			<span>Convex</span></a
 		>
