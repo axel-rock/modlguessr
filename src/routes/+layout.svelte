@@ -3,26 +3,44 @@
 	import { createSvelteAuthClient } from '@mmailaender/convex-better-auth-svelte/svelte'
 	import { authClient } from '$lib/auth'
 	import '$lib/css/style.css'
-	import { useQuery } from 'convex-svelte'
+	import { useConvexClient, useQuery } from 'convex-svelte'
 	import { api } from '$convex/api'
 	import type { User } from 'better-auth'
-	import { goto, invalidateAll } from '$app/navigation'
+	import { invalidateAll } from '$app/navigation'
+	import type { AutumnComponent } from '@useautumn/convex'
 
 	let { data, children } = $props()
 	createSvelteAuthClient({ authClient })
+	const convex = useConvexClient()
 
 	/**
 	 * Fetching the session is currently much faster than useQuery in intial page load.
 	 * This state is here to show the header faster, then replaced when useQuery is ready.
 	 */
-	let sessionUser: User | undefined = $state(undefined)
+	// let sessionUser: User | undefined = $state(undefined)
 
-	data.session.then((session) => {
-		sessionUser = session?.user
-	})
+	// data.session.then((session) => {
+	// 	sessionUser = session?.user
+	// })
 
 	let userQuery = useQuery(api.auth.getCurrentUser, {})
 	let user = $derived(userQuery.data)
+
+	let tickets: number | undefined = $state(undefined)
+
+	$effect(() => {
+		if (!user) return (tickets = undefined)
+		const check = convex
+			.action(api.autumn.check, {
+				featureId: 'tickets',
+			})
+			.then((check) => {
+				console.log({ check })
+				if (check.data?.balance && typeof check.data.balance === 'number')
+					tickets = check.data.balance
+				else tickets = undefined
+			})
+	})
 </script>
 
 <svelte:head>
@@ -41,15 +59,20 @@
 		<a href="/">ModlGuessr</a>
 	</h1>
 	<nav>
+		<a href="/play">Play</a>
+		{#if !!tickets}
+			<span>{tickets} tickets</span>
+		{/if}
 		<a href="/leaderboard">Leaderboard</a>
+		<a href="/pricing">Pricing</a>
 		<a href="/about">About</a>
 		<a href="/blog">Devblog</a>
 
 		{#if user}
 			{@render userButton(user)}
-		{:else if sessionUser}
-			{@const user = sessionUser}
-			{@render userButton(user)}
+			<!-- {:else if sessionUser} -->
+			<!-- {@const user = sessionUser} -->
+			<!-- {@render userButton(user)} -->
 		{:else}
 			<button
 				class="link auth"
@@ -66,7 +89,7 @@
 		<button
 			onclick={async () => {
 				await authClient.signOut()
-				sessionUser = undefined
+				// sessionUser = undefined
 				await invalidateAll()
 				// goto('/', { invalidateAll: true })
 			}}>Sign out</button

@@ -12,3 +12,19 @@ export const message = z.object({
 	// user_id: zid('users'),
 	user_id: z.string(),
 })
+
+export const games = z.object({
+	user_id: z.string(),
+	score: z.number(),
+	difficulty: z.enum(['easy', 'medium', 'hard']),
+	mode: z.enum(['simple']),
+	rounds: z.array(
+		z.object({
+			started_at: z.number(),
+			model: z.string(),
+			messages: z.array(zid('messages')),
+		})
+	),
+	started_at: z.number(),
+	live: z.boolean(),
+})

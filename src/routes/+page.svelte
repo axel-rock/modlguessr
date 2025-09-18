@@ -5,10 +5,10 @@
 
 	// let { data } = $props()
 
-	const messages = useQuery(api.messages.list, {})
+	// const messages = useQuery(api.messages.list, {})
 </script>
 
-{#await messages then messages}
+<!-- {#await messages then messages}
 	{#each messages.data ?? [] as message}
 		{#each message.parts ?? [] as part}
 			{#if part.type === 'text'}
@@ -16,7 +16,7 @@
 			{/if}
 		{/each}
 	{/each}
-{/await}
+{/await} -->
 
 <form method="post" use:enhance>
 	<textarea name="message" id="message"></textarea>

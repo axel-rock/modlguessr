@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as autumn from "../autumn.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
 
@@ -28,6 +29,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  autumn: typeof autumn;
   http: typeof http;
   messages: typeof messages;
 }>;
@@ -5312,4 +5314,5 @@ export declare const components: {
       >;
     };
   };
+  autumn: {};
 };
