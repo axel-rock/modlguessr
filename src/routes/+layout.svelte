@@ -6,7 +6,7 @@
 	import { useConvexClient, useQuery } from 'convex-svelte'
 	import { api } from '$convex/api'
 	import type { User } from 'better-auth'
-	import { invalidateAll } from '$app/navigation'
+	import { goto, invalidateAll } from '$app/navigation'
 	import type { AutumnComponent } from '@useautumn/convex'
 
 	let { data, children } = $props()
@@ -58,7 +58,18 @@
 		<a href="/">ModlGuessr</a>
 	</h1>
 	<nav>
-		<a href="/play">Play</a>
+		<button
+			class="primary"
+			onclick={async () => {
+				const gameId = await convex.mutation(api.games.create, {
+					game: {
+						mode: 'simple',
+						difficulty: 'easy',
+					},
+				})
+				goto(`/play/${gameId}`)
+			}}>Play</button
+		>
 		{#if !!tickets}
 			<span>{tickets} tickets</span>
 		{/if}
