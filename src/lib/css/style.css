@@ -49,3 +49,14 @@ body > div > main {
 pre {
 	white-space: pre-wrap;
 }
+
+article[role='document'] {
+	max-width: var(--narrow-page);
+	margin-inline: auto;
+	padding-block: 2rem;
+
+	img {
+		max-width: 100%;
+		height: auto;
+	}
+}

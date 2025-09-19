@@ -5,10 +5,11 @@
 	let { data }: PageProps = $props()
 </script>
 
-<span>
-	{formatDateAbsolute(data.post.date)}
-</span>
+<article role="document">
+	<span>
+		{formatDateAbsolute(data.post.date)}
+	</span>
+	<h1>{data.post.title}</h1>
 
-<h1>{data.post.title}</h1>
-
-{@html data.post.content}
+	{@html data.post.content}
+</article>

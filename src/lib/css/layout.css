@@ -30,13 +30,13 @@ body {
 		& > header,
 		& > main,
 		& > footer {
-			padding: 1rem 2rem;
+			padding: min(1rem, 1.5dvw) min(2rem, 3dvw);
 			width: 100%;
 			margin-inline: auto;
 		}
 
 		& > main {
-			padding: 0 2rem;
+			padding: 0 min(2rem, 3dvw);
 			flex: 1;
 		}
 	}

@@ -50,7 +50,6 @@
 {#snippet userButton(user: Pick<User, 'image' | 'name'>)}
 	<button id="user-menu-button" class="link auth" popovertarget="user-menu">
 		<img src={user.image} alt={user.name} referrerPolicy="no-referrer" />
-		{user.name}
 	</button>
 {/snippet}
 
@@ -232,6 +231,10 @@
 
 				&[href*='vercel'] img {
 					scale: 0.66;
+				}
+
+				&[href*='github'] img {
+					scale: 0.8;
 				}
 
 				@media (prefers-color-scheme: dark) {

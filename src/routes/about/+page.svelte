@@ -3,4 +3,6 @@
 	import ReadMe from '/README.md'
 </script>
 
-<ReadMe />
+<article role="document">
+	<ReadMe />
+</article>
