@@ -7,7 +7,6 @@
 	import { api } from '$convex/api'
 	import type { User } from 'better-auth'
 	import { goto, invalidateAll } from '$app/navigation'
-	import type { AutumnComponent } from '@useautumn/convex'
 
 	let { data, children } = $props()
 	createSvelteAuthClient({ authClient })
@@ -26,20 +25,12 @@
 	let userQuery = useQuery(api.auth.getCurrentUser, {})
 	let user = $derived(userQuery.data)
 
-	let tickets: number | undefined = $state(undefined)
+	let ticketsQuery = useQuery(api.tickets.get, {})
+	let tickets = $derived(ticketsQuery.data)
 
 	$effect(() => {
 		if (!user) return (tickets = undefined)
-		const check = convex
-			.action(api.autumn.check, {
-				featureId: 'tickets',
-			})
-			.then((check) => {
-				console.log({ check })
-				if (check.data?.balance && typeof check.data.balance === 'number')
-					tickets = check.data.balance
-				else tickets = undefined
-			})
+		convex.action(api.tickets.refresh, {})
 	})
 </script>
 
@@ -61,7 +52,7 @@
 		<button
 			class="primary"
 			onclick={async () => {
-				const gameId = await convex.mutation(api.games.create, {
+				const gameId = await convex.action(api.games.create, {
 					game: {
 						mode: 'simple',
 						difficulty: 'easy',
@@ -249,7 +240,7 @@
 				}
 
 				@media (prefers-color-scheme: dark) {
-					&:is([href*='vercel'], [href*='better-auth']) img {
+					&:is([href*='vercel'], [href*='better-auth'], [href*='github']) img {
 						filter: invert(1);
 					}
 				}

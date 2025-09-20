@@ -1,8 +1,10 @@
-import type { Doc } from '$convex/dataModel'
-import { action, mutation, query } from '$convex/server'
+import type { Doc, Id } from '$convex/dataModel'
+import { action, internalMutation, mutation, query } from '$convex/server'
 import { games } from '$lib/zod/schema'
 import { zodOutputToConvex } from 'convex-helpers/server/zod'
 import { v } from 'convex/values'
+import { autumn } from './autumn'
+import { api, internal } from '$convex/api'
 
 const MODEL_SETS = {
 	easy: [['anthropic/claude-sonnet-4', 'google/gemini-2.5-pro', 'openai/gpt-5', 'xai/grok-4']],
@@ -10,7 +12,7 @@ const MODEL_SETS = {
 	hard: [['anthropic/claude-sonnet-4', 'google/gemini-2.5-pro', 'openai/gpt-5', 'xai/grok-4']],
 }
 
-export const create = mutation({
+export const create = action({
 	args: {
 		game: zodOutputToConvex(games.pick({ mode: true, difficulty: true })),
 	},
@@ -18,6 +20,15 @@ export const create = mutation({
 		const identity = await ctx.auth.getUserIdentity()
 		if (identity === null) throw new Error('Not authenticated')
 		const user_id = identity.subject
+
+		const { data, error: checkError } = await autumn.check(ctx, {
+			featureId: 'tickets',
+		})
+
+		console.log({ data, checkError })
+
+		if (checkError) throw new Error(checkError.message)
+		if (!data?.allowed) throw new Error('Not enough tickets')
 
 		const models = getRandomSet(args.game.difficulty)
 		const model = getRandomModel(models)
@@ -36,8 +47,23 @@ export const create = mutation({
 			live: false,
 		}
 
-		return await ctx.db.insert('games', game)
+		const gameId = (await ctx.runMutation(internal.games._create, { game })) as Id<'games'>
+
+		await autumn.track(ctx, {
+			featureId: 'tickets',
+		})
+
+		await ctx.runAction(api.tickets.refresh)
+
+		return gameId
 	},
+})
+
+export const _create = internalMutation({
+	args: {
+		game: zodOutputToConvex(games),
+	},
+	handler: async (ctx, args) => ctx.db.insert('games', args.game),
 })
 
 export const get = query({
