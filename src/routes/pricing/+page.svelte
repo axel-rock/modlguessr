@@ -1,7 +1,23 @@
 <script lang="ts">
+	import { useConvexClient } from 'convex-svelte'
 	import type { PageProps } from './$types'
+	import { api } from '$convex/api'
+	import { getContext } from 'svelte'
+	import type { Doc } from '$convex/dataModel'
+	import { page } from '$app/state'
 
 	let { data }: PageProps = $props()
+
+	const convex = useConvexClient()
+	const context: { user: Doc<'users'> | undefined } = getContext('context')
+
+	const codeRequest = $derived(
+		context.user
+			? convex.action(api.autumn.createReferralCode, {
+					programId: 'referral',
+				})
+			: undefined
+	)
 </script>
 
 <h1>Pricing</h1>
@@ -51,6 +67,27 @@
 			{/if}
 		</article>
 	{/each}
+
+	{#if codeRequest}
+		{#await codeRequest then codeRequest}
+			{#if codeRequest.statusCode === 200 && codeRequest.data}
+				{@const code = codeRequest.data.code}
+				<div id="referral" class="span-all">
+					<h2>Invite friends, earn free tickets!</h2>
+					<p>You and your friends each get 5 tickets when they sign up using your link.</p>
+					<p>Your referral link:</p>
+
+					<input
+						type="url"
+						name="referral"
+						id="referral"
+						value="{page.url.origin}/referral/{code}"
+						readonly
+					/>
+				</div>
+			{/if}
+		{/await}
+	{/if}
 </div>
 
 <style>
@@ -62,5 +99,10 @@
 	article {
 		display: grid;
 		gap: 0.25rem;
+	}
+	#referral {
+		text-align: center;
+		display: grid;
+		justify-content: center;
 	}
 </style>

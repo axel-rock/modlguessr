@@ -16,7 +16,7 @@ export const load = (async ({ locals: { convex }, fetch }) => {
 	const data = await req.json()
 
 	const products: Product[] =
-		data?.list.sort(sortProducts) ??
+		data?.list.sort(sortProducts).filter((product: Product) => product.id !== 'referral_bonus') ??
 		// .filter((product: Product) =>
 		// 	product.items.some((item) => item.feature?.name === 'tickets')
 		// )

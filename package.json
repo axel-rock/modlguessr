@@ -1,7 +1,7 @@
 {
   "name": "modlguessr",
   "author": "Axel Rock",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "type": "module",
   "scripts": {
     "dev": "concurrently --names 'svelte,convex' --prefix-colors \"#f96743,#F3B01C\" \"vite dev --host\" \"pnpx convex dev\"",

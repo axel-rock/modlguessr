@@ -7,20 +7,18 @@
 	import { api } from '$convex/api'
 	import type { User } from 'better-auth'
 	import { goto, invalidateAll } from '$app/navigation'
+	import { setContext } from 'svelte'
+	import type { Doc } from '$convex/dataModel.js'
 
 	let { data, children } = $props()
 	createSvelteAuthClient({ authClient })
 	const convex = useConvexClient()
 
-	/**
-	 * Fetching the session is currently much faster than useQuery in intial page load.
-	 * This state is here to show the header faster, then replaced when useQuery is ready.
-	 */
-	// let sessionUser: User | undefined = $state(undefined)
+	const context: { user: Doc<'users'> | undefined } = $state({
+		user: undefined,
+	})
 
-	// data.session.then((session) => {
-	// 	sessionUser = session?.user
-	// })
+	setContext('context', context)
 
 	let userQuery = useQuery(api.auth.getCurrentUser, {})
 	let user = $derived(userQuery.data)
@@ -31,6 +29,10 @@
 	$effect(() => {
 		if (!user) return (tickets = undefined)
 		convex.action(api.tickets.refresh, {})
+	})
+
+	$effect(() => {
+		context.user = user as Doc<'users'> | undefined
 	})
 </script>
 
@@ -46,10 +48,7 @@
 
 <header>
 	<h1>
-		<a href="/">
-			<!-- <img src="/logo/modlguessr.svg" alt="ModlGuessr Logo" /> -->
-			ModlGuessr
-		</a>
+		<a href="/"> ModlGuessr </a>
 	</h1>
 	<button
 		id="play"
@@ -152,11 +151,6 @@
 			a {
 				display: grid;
 				align-items: center;
-
-				img {
-					height: 2.25rem;
-					object-fit: contain;
-				}
 			}
 		}
 
