@@ -8,14 +8,20 @@ html {
 	hanging-punctuation: first last;
 	font-size: clamp(16px, 2vw, 18px);
 	/* font-size: clamp(16px, 2vw, 22px); */
-	font-family:
+	/* font-family:
 		Inter,
 		SF Pro Text,
 		SF Pro Icons,
 		Helvetica Neue,
 		Helvetica,
 		Arial,
-		sans-serif;
+		sans-serif; */
+
+	font-family: 'Bricolage Grotesque', sans-serif;
+	font-optical-sizing: auto;
+	font-weight: 400;
+	font-style: normal;
+	font-variation-settings: 'wdth' 100;
 	font-optical-sizing: auto;
 	text-rendering: optimizelegibility;
 	-webkit-font-smoothing: antialiased;

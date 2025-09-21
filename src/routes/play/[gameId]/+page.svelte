@@ -48,7 +48,7 @@
 			<ul>
 				{#each chat.messages as message, messageIndex (messageIndex)}
 					<li>
-						<div>{message.role}</div>
+						<div>{message.role === 'user' ? 'You' : '?'}</div>
 						<div>
 							{#each message.parts as part, partIndex (partIndex)}
 								{#if part.type === 'text'}

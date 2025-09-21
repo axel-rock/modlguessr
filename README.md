@@ -75,12 +75,17 @@ As the main goal is to explore the stack, here are some features we can implemen
 - [x] Setup Convex
 - [x] Setup Better Auth
   - [x] Google Auth
+  - [ ] Username plugin
   - [ ] Find out and implement other relevant providers
-- [ ] Setup Autumn
+- [-] Setup Autumn
+  - [x] Define plans
+  - [x] Show and track feature (tickets to play a game)
+  - [ ] Implement and test payment
 - [ ] CD Pipeline
   - [ ] Deploy on Vercel
   - [ ] Auth is working
   - [ ] Convex prod is used
+  - [ ] Autumn prod is used
 - [x] Create a blog to document learnings
 - [ ] Gameplay with AI SDK
   - [ ] Find fun game loops

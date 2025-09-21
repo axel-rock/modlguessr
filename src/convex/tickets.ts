@@ -1,3 +1,8 @@
+/**
+ * This table is just a wrapper around the Autumn API to show the tickets balance in the UI.
+ * It might not be necessary in the future, and there are alternative ways to get the info, just not as reactive.
+ */
+
 import type { Id } from '$convex/dataModel'
 import { action, internalMutation, query } from '$convex/server'
 import { v } from 'convex/values'

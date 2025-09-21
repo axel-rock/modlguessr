@@ -46,21 +46,27 @@
 
 <header>
 	<h1>
-		<a href="/">ModlGuessr</a>
+		<a href="/">
+			<!-- <img src="/logo/modlguessr.svg" alt="ModlGuessr Logo" /> -->
+			ModlGuessr
+		</a>
 	</h1>
+	<button
+		id="play"
+		class="primary"
+		onclick={async () => {
+			const gameId = await convex.action(api.games.create, {
+				game: {
+					mode: 'simple',
+					difficulty: 'easy',
+				},
+			})
+			goto(`/play/${gameId}`)
+		}}
+	>
+		<img src="/images/play.svg" alt="Play" />
+	</button>
 	<nav>
-		<button
-			class="primary"
-			onclick={async () => {
-				const gameId = await convex.action(api.games.create, {
-					game: {
-						mode: 'simple',
-						difficulty: 'easy',
-					},
-				})
-				goto(`/play/${gameId}`)
-			}}>Play</button
-		>
 		{#if !!tickets}
 			<span>{tickets} tickets</span>
 		{/if}
@@ -137,9 +143,22 @@
 
 <style>
 	header {
-		display: flex;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
 		align-items: center;
 		justify-content: space-between;
+
+		h1 {
+			a {
+				display: grid;
+				align-items: center;
+
+				img {
+					height: 2.25rem;
+					object-fit: contain;
+				}
+			}
+		}
 
 		nav {
 			display: flex;
@@ -157,6 +176,16 @@
 				object-fit: cover;
 				border-radius: 50%;
 			}
+		}
+	}
+
+	#play {
+		font-weight: 600;
+		/* background: linear-gradient(90deg, #33caff, #8169ff 25%, #ff7fe5 50%, #ffe475 70%, #2fffe7); */
+		background-color: unset;
+		transition: all 0.1s ease;
+		&:hover {
+			scale: 1.05;
 		}
 	}
 

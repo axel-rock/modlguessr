@@ -8,17 +8,13 @@
 	// const messages = useQuery(api.messages.list, {})
 </script>
 
-<!-- {#await messages then messages}
-	{#each messages.data ?? [] as message}
-		{#each message.parts ?? [] as part}
-			{#if part.type === 'text'}
-				<p>{message.role}: {part.text}</p>
-			{/if}
-		{/each}
-	{/each}
-{/await} -->
+<h1>Can you guess the model?</h1>
 
-<form method="post" use:enhance>
-	<textarea name="message" id="message"></textarea>
-	<button type="submit">Submit</button>
-</form>
+<style>
+	h1 {
+		text-align: center;
+		font-size: 4rem;
+		font-weight: 800;
+		margin-block: 4rem;
+	}
+</style>
