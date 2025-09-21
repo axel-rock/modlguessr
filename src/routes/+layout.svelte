@@ -226,10 +226,12 @@
 
 	footer {
 		--icon-size: 1.75rem;
+		--background-color: var(--grey-50);
 
 		align-items: start;
 		justify-content: space-evenly;
 		gap: 1rem;
+		position: relative;
 
 		& > div.grid {
 			display: grid;
@@ -246,7 +248,7 @@
 			}
 		}
 
-		background-color: var(--grey-50);
+		background-color: var(--background-color);
 
 		a:has(img) {
 			display: grid;
@@ -275,6 +277,29 @@
 					filter: invert(1);
 				}
 			}
+		}
+
+		/**
+		* Create "inverted" border radius effect
+		*/
+		&::before,
+		&::after {
+			--radius: 3rem;
+			content: '';
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 100%;
+			width: 100%;
+			height: var(--radius);
+			background-color: var(--background-color);
+			z-index: -1;
+		}
+
+		&::after {
+			border-bottom-left-radius: var(--radius);
+			border-bottom-right-radius: var(--radius);
+			background-color: var(--grey-0);
 		}
 	}
 </style>

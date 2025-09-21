@@ -43,6 +43,11 @@
 </script>
 
 {#if round}
+	<details open>
+		<summary>DB Messages</summary>
+
+		<pre>{JSON.stringify(round.messages, null, 2)}</pre>
+	</details>
 	<div id="game">
 		<div id="chat">
 			<ul>

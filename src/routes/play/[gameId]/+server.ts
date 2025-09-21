@@ -34,5 +34,7 @@ export async function POST({ request, params: { gameId }, locals: { convex } }) 
 		messages: convertToModelMessages(messages),
 	})
 
+	/* Save messages to DB */
+
 	return result.toUIMessageStreamResponse()
 }

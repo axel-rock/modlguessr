@@ -4,4 +4,19 @@
 	let { data }: PageProps = $props()
 </script>
 
-<h1>Leaderboard</h1>
+<main>
+	<h1>Leaderboard</h1>
+</main>
+
+<style>
+	main {
+		width: min(var(--narrow-page), 100%);
+		justify-self: center;
+		background-color: #ffd600;
+		color: #000;
+
+		& > * {
+			color: inherit;
+		}
+	}
+</style>
