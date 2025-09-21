@@ -38,6 +38,10 @@ body {
 		& > main {
 			padding: 0 min(2rem, 3dvw);
 			flex: 1;
+
+			&:has(+ footer) {
+				padding-bottom: 2rem;
+			}
 		}
 	}
 

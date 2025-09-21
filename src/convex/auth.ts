@@ -1,10 +1,11 @@
 import { createClient, type AuthFunctions, type GenericCtx } from '@convex-dev/better-auth'
 import { api, components, internal } from './_generated/api.js'
-import { query } from './_generated/server.js'
-import type { Id, DataModel } from './_generated/dataModel.js'
+import { internalQuery, query } from './_generated/server.js'
+import type { Id, DataModel, Doc } from './_generated/dataModel.js'
 import { betterAuth } from 'better-auth'
-import { admin, anonymous, organization } from 'better-auth/plugins'
+import { username } from 'better-auth/plugins'
 import { convex } from '@convex-dev/better-auth/plugins'
+import { v } from 'convex/values'
 
 const PUBLIC_GOOGLE_CLIENT_ID = process.env.PUBLIC_GOOGLE_CLIENT_ID as string
 const PRIVATE_GOOGLE_CLIENT_SECRET = process.env.PRIVATE_GOOGLE_CLIENT_SECRET as string
@@ -52,6 +53,9 @@ export const createAuth = (ctx: GenericCtx<DataModel>) =>
 		},
 		plugins: [
 			convex(),
+			username({
+				minUsernameLength: 3,
+			}),
 			// admin(),
 			// organization({
 			// 	organizationLimit: 1,
@@ -100,4 +104,15 @@ export const getSession = query({
 	},
 })
 
-// export const createOrganization = mutation({})
+type AuthInstance = ReturnType<typeof createAuth>
+type BetterAuthUser = AuthInstance['$Infer']['Session']['user']
+type ConvexUser = Doc<'users'>
+
+type Merge<T> = {
+	[K in keyof T]: T[K]
+}
+
+/**
+ * Combined user type that merges both Better-Auth and Convex fields into a clean inferred object always up to date
+ */
+export type ConvexBetterAuthUser = Merge<ConvexUser & BetterAuthUser>

@@ -2,14 +2,13 @@
 	import { useConvexClient } from 'convex-svelte'
 	import type { PageProps } from './$types'
 	import { api } from '$convex/api'
-	import { getContext } from 'svelte'
-	import type { Doc } from '$convex/dataModel'
 	import { page } from '$app/state'
+	import { context } from '$lib/context.svelte'
+	import { type Feature } from 'autumn-js'
 
 	let { data }: PageProps = $props()
 
 	const convex = useConvexClient()
-	const context: { user: Doc<'users'> | undefined } = getContext('context')
 
 	const codeRequest = $derived(
 		context.user
@@ -49,7 +48,8 @@
 												item.feature.display.plural}
 										{#if item.interval}per {item.interval}{/if}
 									{:else if item.type === 'priced_feature'}
-										€{item.price} per {item.feature.display.singular}
+										€{item.price} per {(item.feature as Feature & { display: { singular: string } })
+											.display.singular}
 									{/if}
 								</li>
 							{/if}

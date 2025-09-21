@@ -9,16 +9,11 @@
 	import { goto, invalidateAll } from '$app/navigation'
 	import { setContext } from 'svelte'
 	import type { Doc } from '$convex/dataModel.js'
+	import { context } from '$lib/context.svelte'
 
 	let { data, children } = $props()
 	createSvelteAuthClient({ authClient })
 	const convex = useConvexClient()
-
-	const context: { user: Doc<'users'> | undefined } = $state({
-		user: undefined,
-	})
-
-	setContext('context', context)
 
 	let userQuery = useQuery(api.auth.getCurrentUser, {})
 	let user = $derived(userQuery.data)
@@ -32,7 +27,8 @@
 	})
 
 	$effect(() => {
-		context.user = user as Doc<'users'> | undefined
+		// @ts-expect-error
+		context.user = user
 	})
 </script>
 
@@ -71,8 +67,6 @@
 		{/if}
 		<a href="/leaderboard">Leaderboard</a>
 		<a href="/pricing">Pricing</a>
-		<a href="/about">About</a>
-		<a href="/blog">Devblog</a>
 
 		{#if user}
 			{@render userButton(user)}
@@ -92,6 +86,15 @@
 
 {#if user}
 	<menu id="user-menu" popover="auto">
+		<a
+			href="/settings"
+			role="button"
+			onclick={(event) => {
+				const link = event.target as HTMLAnchorElement
+				const popover = link.closest('[popover="auto"]') as HTMLElement
+				popover.hidePopover()
+			}}>Settings</a
+		>
 		<button
 			onclick={async () => {
 				await authClient.signOut()
@@ -108,35 +111,39 @@
 </main>
 
 <footer>
-	<div class="tools">
-		<span>Source code:</span>
-		<a href="https://github.com/axel-rock/modlguessr" target="_blank">
-			<img src="/logo/github.svg" alt="GitHub" />
-			<span>GitHub</span>
-		</a>
-	</div>
-	<div class="tools">
-		<span>Powered by:</span>
-		<a href="https://svelte.dev/" target="_blank">
-			<img src="/logo/svelte.svg" alt="Svelte" />
-			<span>SvelteKit</span></a
-		>
-		<a href="https://convex.dev/referral/AXELRO9828" target="_blank">
-			<img src="/logo/convex.svg" alt="Convex" />
-			<span>Convex</span></a
-		>
-		<a href="https://www.better-auth.com/" target="_blank">
-			<img src="/logo/better-auth.svg" alt="Better Auth" />
-			<span>Better Auth</span></a
-		>
-		<a href="https://useautumn.com/" target="_blank">
-			<img src="/logo/autumn.png" alt="Autumn" />
-			<span>Autumn</span></a
-		>
-		<a href="https://vercel.com/" target="_blank">
-			<img src="/logo/vercel.svg" alt="Vercel" />
-			<span>Vercel AI</span></a
-		>
+	<div class="grid">
+		<div class="tools">
+			<a href="/about">About</a>
+			<a href="/blog">Devblog</a>
+			<span>Source code:</span>
+			<a href="https://github.com/axel-rock/modlguessr" target="_blank">
+				<img src="/logo/github.svg" alt="GitHub" />
+				<span>GitHub</span>
+			</a>
+		</div>
+		<div class="tools">
+			<span>Powered by:</span>
+			<a href="https://svelte.dev/" target="_blank">
+				<img src="/logo/svelte.svg" alt="Svelte" />
+				<span>SvelteKit</span></a
+			>
+			<a href="https://convex.dev/referral/AXELRO9828" target="_blank">
+				<img src="/logo/convex.svg" alt="Convex" />
+				<span>Convex</span></a
+			>
+			<a href="https://www.better-auth.com/" target="_blank">
+				<img src="/logo/better-auth.svg" alt="Better Auth" />
+				<span>Better Auth</span></a
+			>
+			<a href="https://useautumn.com/" target="_blank">
+				<img src="/logo/autumn.png" alt="Autumn" />
+				<span>Autumn</span></a
+			>
+			<a href="https://vercel.com/" target="_blank">
+				<img src="/logo/vercel.svg" alt="Vercel" />
+				<span>Vercel AI</span></a
+			>
+		</div>
 	</div>
 </footer>
 
@@ -218,54 +225,54 @@
 	}
 
 	footer {
-		display: grid;
-		grid-template-columns: auto auto;
+		--icon-size: 1.75rem;
+
 		align-items: start;
 		justify-content: space-evenly;
 		gap: 1rem;
 
+		& > div.grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			width: 100%;
+			max-width: var(--narrow-page);
+			justify-self: center;
+
+			& > div > * {
+				display: grid;
+				align-items: center;
+				height: 2rem;
+				font-size: 0.85rem;
+			}
+		}
+
 		background-color: var(--grey-50);
 
-		.tools {
-			--icon-size: 1.75rem;
+		a:has(img) {
 			display: grid;
 			grid-template-columns: var(--icon-size) 1fr;
 			gap: 0.25rem;
 			align-items: center;
-			font-size: 0.85rem;
+			font-size: 1em;
 
-			& > span {
-				grid-column: 1 / -1;
+			img {
+				width: 100%;
+				aspect-ratio: 1;
+				object-fit: contain;
+				justify-self: center;
 			}
 
-			a {
-				display: grid;
-				grid-column: 1 / -1;
-				grid-template-columns: subgrid;
-				align-items: center;
-				font-size: 0.85rem;
+			&[href*='vercel'] img {
+				scale: 0.66;
+			}
 
-				/* Invert images in dark mode */
+			&[href*='github'] img {
+				scale: 0.8;
+			}
 
-				img {
-					width: 100%;
-					aspect-ratio: 1;
-					object-fit: contain;
-					justify-self: center;
-				}
-
-				&[href*='vercel'] img {
-					scale: 0.66;
-				}
-
-				&[href*='github'] img {
-					scale: 0.8;
-				}
-
-				@media (prefers-color-scheme: dark) {
-					&:is([href*='vercel'], [href*='better-auth'], [href*='github']) img {
-						filter: invert(1);
-					}
+			@media (prefers-color-scheme: dark) {
+				&:is([href*='vercel'], [href*='better-auth'], [href*='github']) img {
+					filter: invert(1);
 				}
 			}
 		}
