@@ -12,7 +12,6 @@ import type * as auth from "../auth.js";
 import type * as autumn from "../autumn.js";
 import type * as games from "../games.js";
 import type * as http from "../http.js";
-import type * as messages from "../messages.js";
 import type * as tickets from "../tickets.js";
 
 import type {
@@ -34,7 +33,6 @@ declare const fullApi: ApiFromModules<{
   autumn: typeof autumn;
   games: typeof games;
   http: typeof http;
-  messages: typeof messages;
   tickets: typeof tickets;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

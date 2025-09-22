@@ -5,12 +5,13 @@ import { zid } from 'convex-helpers/server/zod'
 
 export const message = z.object({
 	role: z.enum(['assistant', 'system', 'user']),
-	parts: z.array(z.record(z.string(), z.any())),
-	metadata: z.optional(z.any()),
-	status: z.optional(z.string()),
-	// TODO: Use Local install to get allow "join"
-	// user_id: zid('users'),
-	user_id: z.string(),
+	parts: z.array(
+		z.object({
+			type: z.string(),
+			text: z.string().optional(),
+		})
+	),
+	timestamp: z.number(),
 })
 
 export const games = z.object({
@@ -23,7 +24,7 @@ export const games = z.object({
 			started_at: z.number(),
 			model: z.string(),
 			models: z.array(z.string()),
-			messages: z.array(zid('messages')),
+			messages: z.array(message),
 		})
 	),
 	started_at: z.optional(z.number()),

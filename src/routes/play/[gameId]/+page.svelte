@@ -4,8 +4,10 @@
 	import { page } from '$app/state'
 	import { api } from '$convex/api'
 	import type { Id } from '$convex/dataModel'
+	import { PUBLIC_CONVEX_SITE_URL } from '$env/static/public'
+	import { DefaultChatTransport, type UIMessage } from 'ai'
 	import { Chat } from '@ai-sdk/svelte'
-	import { DefaultChatTransport } from 'ai'
+	import { untrack } from 'svelte'
 
 	let { data }: PageProps = $props()
 
@@ -17,14 +19,38 @@
 
 	let round = $derived(game.data?.rounds.at(-1))
 
-	const transport = $derived(new DefaultChatTransport({ api: `./${page.params.gameId}` }))
+	//@ts-expect-error
+	let messages: UIMessage[] = $derived(round?.messages ?? [])
 
 	let input = $state('')
-	const chat = $derived(new Chat({ transport }))
 
-	function handleSubmit(event: SubmitEvent) {
+	// Create a custom transport that goes to Convex
+	const transport = new DefaultChatTransport({
+		body: {
+			gameId: page.params.gameId,
+		},
+		api: `${PUBLIC_CONVEX_SITE_URL}/game-stream`,
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	})
+
+	// Create the chat instance derived from round messages
+	const chat = $derived(
+		new Chat({
+			transport,
+			// TODO: This doesn't work for watchers (messages don't update). Maybe only create the chat on submit? Otherwise show messages from DB?
+			messages: untrack(() => messages),
+		})
+	)
+
+	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault()
-		chat.sendMessage({ text: input })
+		console.log('Sending message:', input)
+
+		// Use the AI SDK Chat to send the message
+		await chat.sendMessage({ text: input })
+
 		input = ''
 	}
 
@@ -43,20 +69,19 @@
 </script>
 
 {#if round}
-	<details open>
-		<summary>DB Messages</summary>
-
-		<pre>{JSON.stringify(round.messages, null, 2)}</pre>
-	</details>
 	<div id="game">
 		<div id="chat">
+			<h3>Messages ({chat.messages.length})</h3>
 			<ul>
-				{#each chat.messages as message, messageIndex (messageIndex)}
+				{#each chat.messages as message}
 					<li>
-						<div>{message.role === 'user' ? 'You' : '?'}</div>
-						<div>
+						<div class="message-header">
+							<span class="role">{message.role === 'user' ? 'You' : 'AI'}</span>
+							<span class="timestamp">{new Date().toLocaleTimeString()}</span>
+						</div>
+						<div class="message-content">
 							{#each message.parts as part, partIndex (partIndex)}
-								{#if part.type === 'text'}
+								{#if part.type === 'text' && part.text}
 									<div>{part.text}</div>
 								{/if}
 							{/each}
