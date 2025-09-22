@@ -1,7 +1,7 @@
 {
   "name": "modlguessr",
   "author": "Axel Rock",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "type": "module",
   "scripts": {
     "dev": "concurrently --names 'svelte,convex' --prefix-colors \"#f96743,#F3B01C\" \"vite dev --host\" \"pnpx convex dev\"",
@@ -38,6 +38,7 @@
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-svelte": "^3.0.0",
     "globals": "^16.0.0",
+    "marked": "^16.3.0",
     "mdsvex": "^0.12.6",
     "prettier": "^3.4.2",
     "prettier-plugin-svelte": "^3.3.3",

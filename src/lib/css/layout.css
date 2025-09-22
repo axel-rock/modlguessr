@@ -36,8 +36,13 @@ body {
 		}
 
 		& > main {
+			--radius: 3rem;
 			padding: 0 min(2rem, 3dvw);
 			flex: 1;
+			width: min(var(--narrow-page), 100%);
+			justify-self: center;
+			border-bottom-left-radius: var(--radius);
+			border-bottom-right-radius: var(--radius);
 
 			&:has(+ footer) {
 				padding-bottom: 2rem;

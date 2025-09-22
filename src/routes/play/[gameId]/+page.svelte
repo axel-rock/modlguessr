@@ -8,6 +8,7 @@
 	import { DefaultChatTransport, type UIMessage } from 'ai'
 	import { Chat } from '@ai-sdk/svelte'
 	import { untrack } from 'svelte'
+	import { marked } from 'marked'
 
 	let { data }: PageProps = $props()
 
@@ -69,26 +70,28 @@
 </script>
 
 {#if round}
-	<div id="game">
-		<div id="chat">
-			<h3>Messages ({chat.messages.length})</h3>
-			<ul>
-				{#each chat.messages as message}
-					<li>
-						<div class="message-header">
-							<span class="role">{message.role === 'user' ? 'You' : 'AI'}</span>
-							<span class="timestamp">{new Date().toLocaleTimeString()}</span>
-						</div>
-						<div class="message-content">
-							{#each message.parts as part, partIndex (partIndex)}
-								{#if part.type === 'text' && part.text}
-									<div>{part.text}</div>
-								{/if}
-							{/each}
-						</div>
-					</li>
-				{/each}
-			</ul>
+	<main id="chat">
+		{#if chat.messages.length === 0 && chat.status === 'ready'}
+			<h1 class="hero">Ask me anything to guess who I am!</h1>
+		{/if}
+		<ul>
+			{#each chat.messages as message}
+				<li>
+					<div class="message-header">
+						<span class="role">{message.role === 'user' ? 'You' : 'AI'}</span>
+						<span class="timestamp">{new Date().toLocaleTimeString()}</span>
+					</div>
+					<div class="message-content">
+						{#each message.parts as part, partIndex (partIndex)}
+							{#if part.type === 'text' && part.text}
+								<div>{@html marked(part.text)}</div>
+							{/if}
+						{/each}
+					</div>
+				</li>
+			{/each}
+		</ul>
+		<div id="actions">
 			<menu id="vote">
 				{#each round.models as model}
 					{@const provider = model.split('/')[0]}
@@ -116,13 +119,31 @@
 					}}
 					bind:value={input}
 				></textarea>
-				<button type="submit" class="primary">Send</button>
+				<button type="submit" class="primary" disabled={chat.status !== 'ready'}>Send</button>
 			</form>
 		</div>
-	</div>
+	</main>
 {/if}
 
 <style>
+	main {
+		display: flex;
+		flex-flow: column nowrap;
+		width: min(var(--narrow-page), 100%);
+		height: 100%;
+		justify-self: center;
+	}
+
+	#actions {
+		position: sticky;
+		bottom: 0;
+		background-color: var(--grey-0);
+		margin-top: auto;
+		padding: 1rem 0;
+		display: grid;
+		gap: 1rem;
+	}
+
 	menu#vote {
 		list-style: none;
 		padding: 0;
@@ -130,6 +151,7 @@
 		display: grid;
 		grid-template-columns: 1fr; /* mobile first: 1 column */
 		gap: 1rem;
+		margin-top: auto;
 
 		button {
 			display: grid;
@@ -163,20 +185,13 @@
 			grid-template-columns: repeat(4, 1fr); /* desktop: 4 columns */
 		}
 	}
-	#chat {
-		width: min(var(--narrow-page), 100%);
-		justify-self: center;
 
-		form#message {
-			display: grid;
-			grid-template-columns: 1fr auto auto;
-			align-items: end;
-			box-sizing: border-box;
-			justify-self: stretch;
-			padding: 1rem 0;
-			/* margin-inline: -2rem; */
-			position: sticky;
-			bottom: 0;
-		}
+	form#message {
+		display: grid;
+		grid-template-columns: 1fr auto auto;
+		align-items: end;
+		box-sizing: border-box;
+		justify-self: stretch;
+		/* margin-inline: -2rem; */
 	}
 </style>

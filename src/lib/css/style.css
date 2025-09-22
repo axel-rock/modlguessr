@@ -21,9 +21,26 @@
 	--brand: #f15a22;
 	--brand-contrast: #fff;
 	--narrow-page: 80ch;
+	--background-color: var(--grey-0);
 
-	background-color: var(--grey-0);
+	background-color: var(--background-color);
 	color: var(--grey-800);
+
+	&:has(main#leaderboard) {
+		--background-color: #ffd600;
+		header,
+		main {
+			* {
+				color: #000;
+			}
+		}
+	}
+
+	&:has(main#chat) header {
+		position: sticky;
+		top: 0;
+		background-color: var(--grey-0);
+	}
 
 	color-scheme: light dark;
 }

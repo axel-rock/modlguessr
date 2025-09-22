@@ -190,3 +190,10 @@ a,
 strong {
 	font-weight: 600;
 }
+
+h1.hero {
+	text-align: center;
+	font-size: 4rem;
+	font-weight: 800;
+	margin-block: 4rem;
+}

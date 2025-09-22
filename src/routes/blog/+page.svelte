@@ -4,7 +4,7 @@
 	let { data }: PageProps = $props()
 </script>
 
-<div id="blog">
+<main id="blog">
 	<h1>Blog</h1>
 
 	<!-- <pre>{JSON.stringify(data.posts, null, 2)}</pre> -->
@@ -16,7 +16,7 @@
 			</li>
 		{/each}
 	</ul>
-</div>
+</main>
 
 <style>
 	#blog {

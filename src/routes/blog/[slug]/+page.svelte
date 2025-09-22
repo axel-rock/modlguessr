@@ -5,11 +5,24 @@
 	let { data }: PageProps = $props()
 </script>
 
-<article role="document">
-	<span>
-		{formatDateAbsolute(data.post.date)}
-	</span>
-	<h1>{data.post.title}</h1>
+<main>
+	<nav>
+		<a href="/blog">← Back to blog</a>
+	</nav>
 
-	{@html data.post.content}
-</article>
+	<article role="document">
+		<span>
+			{formatDateAbsolute(data.post.date)}
+		</span>
+		<h1>{data.post.title}</h1>
+
+		{@html data.post.content}
+	</article>
+</main>
+
+<style>
+	nav {
+		width: min(var(--narrow-page), 100%);
+		justify-self: center;
+	}
+</style>
