@@ -1,7 +1,8 @@
 import { httpRouter } from 'convex/server'
 import { authComponent } from './auth'
 import { createAuth } from './auth'
-import { streamGameChat } from './games'
+import { stream } from './games'
+import { httpAction } from '$convex/server'
 
 const http = httpRouter()
 
@@ -10,13 +11,25 @@ authComponent.registerRoutes(http, createAuth)
 http.route({
 	path: '/game-stream',
 	method: 'POST',
-	handler: streamGameChat,
+	handler: stream,
 })
 
+// Handle CORS preflight request
 http.route({
 	path: '/game-stream',
 	method: 'OPTIONS',
-	handler: streamGameChat,
+	handler: httpAction(
+		async (ctx, request) =>
+			new Response(null, {
+				status: 200,
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Methods': 'POST, OPTIONS',
+					'Access-Control-Allow-Headers': 'Content-Type',
+					'Access-Control-Max-Age': '86400',
+				},
+			})
+	),
 })
 
 export default http

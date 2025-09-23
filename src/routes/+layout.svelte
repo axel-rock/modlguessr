@@ -1,14 +1,12 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg'
+	import play from '$lib/assets/play.svg?raw'
 	import { createSvelteAuthClient } from '@mmailaender/convex-better-auth-svelte/svelte'
 	import { authClient } from '$lib/auth'
 	import '$lib/css/style.css'
 	import { useConvexClient, useQuery } from 'convex-svelte'
 	import { api } from '$convex/api'
-	import type { User } from 'better-auth'
 	import { goto, invalidateAll } from '$app/navigation'
-	import { setContext } from 'svelte'
-	import type { Doc } from '$convex/dataModel.js'
 	import { context } from '$lib/context.svelte'
 	import { page } from '$app/state'
 	import Footer from '../lib/components/Footer.svelte'
@@ -55,7 +53,7 @@
 			goto(`/play/${gameId}`)
 		}}
 	>
-		<img src="/images/play.svg" alt="Play" />
+		{@html play}
 	</button>
 	<nav>
 		{#if !!tickets}
@@ -93,9 +91,7 @@
 		<button
 			onclick={async () => {
 				await authClient.signOut()
-				// sessionUser = undefined
 				await invalidateAll()
-				// goto('/', { invalidateAll: true })
 			}}>Sign out</button
 		>
 	</menu>
@@ -103,6 +99,7 @@
 
 {@render children?.()}
 
+<!-- Don't show footer on play page, the chat textarea takes up the bottom space -->
 {#if !page.route.id?.startsWith('/play')}
 	<Footer />
 {/if}
@@ -142,7 +139,6 @@
 
 	#play {
 		font-weight: 600;
-		/* background: linear-gradient(90deg, #33caff, #8169ff 25%, #ff7fe5 50%, #ffe475 70%, #2fffe7); */
 		background-color: unset;
 		transition: all 0.1s ease;
 		&:hover {

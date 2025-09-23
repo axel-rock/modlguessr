@@ -2,17 +2,23 @@
 
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zod'
+import type { UIMessage } from 'ai'
+
+const TextUIPartSchema = z.object({
+	type: z.literal('text'),
+	text: z.string(),
+})
+const ReasoningUIPartSchema = z.object({
+	type: z.literal('reasoning'),
+	text: z.string(),
+})
 
 export const message = z.object({
+	id: z.string(),
 	role: z.enum(['assistant', 'system', 'user']),
-	parts: z.array(
-		z.object({
-			type: z.string(),
-			text: z.string().optional(),
-		})
-	),
+	parts: z.array(z.union([ReasoningUIPartSchema, TextUIPartSchema])),
 	timestamp: z.number(),
-})
+}) satisfies z.ZodType<UIMessage>
 
 export const games = z.object({
 	user_id: z.string(),
