@@ -1,20 +1,24 @@
 <script lang="ts">
+	// import type { PageProps } from './$types'
 	import { useConvexClient, useQuery } from 'convex-svelte'
-	import type { PageProps } from './$types'
 	import { page } from '$app/state'
 	import { api } from '$convex/api'
-	import type { Doc, Id } from '$convex/dataModel'
+	import type { Id } from '$convex/dataModel'
 	import { PUBLIC_CONVEX_SITE_URL } from '$env/static/public'
-	import { DefaultChatTransport, type UIMessage } from 'ai'
+	import { DefaultChatTransport } from 'ai'
 	import { Chat } from '@ai-sdk/svelte'
 	import { untrack } from 'svelte'
 	import { marked } from 'marked'
 	import { flip } from 'svelte/animate'
-	import { sineIn, sineInOut, sineOut } from 'svelte/easing'
+	import { linear, sineIn, sineInOut, sineOut } from 'svelte/easing'
 	import { MODEL_SETS } from '$lib/models'
-	import { fade, fly, slide } from 'svelte/transition'
+	import { fly } from 'svelte/transition'
+	import Score from './Score.svelte'
+	import { type Game } from '$lib/zod/schema'
+	import { Tween } from 'svelte/motion'
+	import Timer from './Timer.svelte'
 
-	let { data }: PageProps = $props()
+	// let { data }: PageProps = $props()
 
 	const query = $derived(
 		useQuery(api.games.get, {
@@ -22,15 +26,22 @@
 		})
 	)
 
-	let game = $state<typeof query.data | undefined>(undefined)
+	let game = $state<Game | undefined>(undefined)
 	const roundNumber = $derived(game?.rounds.length ?? 0)
 	const roundIndex = $derived(roundNumber - 1)
 	const round = $derived(game?.rounds[roundIndex])
+
+	const duration = 1000
+	const total = new Tween(0, { duration: duration * 2, easing: linear, delay: duration * 5 })
 
 	$effect(() => {
 		if (query.data) {
 			game = query.data
 		}
+	})
+
+	$effect(() => {
+		total.set(game?.score ?? 0)
 	})
 
 	const convex = useConvexClient()
@@ -55,11 +66,6 @@
 	const initialMessages = $derived(
 		page.params.gameId && roundNumber ? untrack(() => round?.messages) : []
 	)
-
-	$effect(() => {
-		$inspect.trace()
-		console.log({ transport, roundIndex, initialMessages })
-	})
 
 	const chat = $derived(
 		new Chat({
@@ -86,22 +92,19 @@
 	})
 
 	async function pick(model: string) {
-		const result = await convex.mutation(api.games.pick, {
+		const result = await convex.action(api.games.pick, {
 			gameId: page.params.gameId as Id<'games'>,
 			roundIndex,
 			model,
 		})
-		console.log({ result })
-		if (result.success) {
-			alert('You picked the correct model!')
-		} else {
-			alert('You picked the wrong model!')
-		}
 	}
 </script>
 
 <main id="chat">
-	<small>Round #{roundNumber}</small>
+	<header>
+		<small>Round #{roundNumber} - <Timer {round} /></small>
+		<label id="total">Total: <output style="width: 6ch;">{total.current.toFixed(0)}</output></label>
+	</header>
 	{#if messages.length === 0 && chat.status === 'ready'}
 		<h1 class="hero" out:fly={{ y: -50, duration: 200, easing: sineOut }}>
 			Ask me anything to guess who I am!
@@ -136,6 +139,8 @@
 					name="model"
 					animate:flip={{ duration: 250, easing: sineInOut }}
 					onclick={() => pick(model)}
+					class:selected={round?.answer === model}
+					class:correct={round?.model === model}
 				>
 					<img src="/logo/{provider}.svg" alt={provider} />
 					<span class="name">{name}</span>
@@ -143,26 +148,39 @@
 				</button>
 			{/each}
 		</menu>
-		<form id="message" onsubmit={handleSubmit}>
-			<textarea
-				name="message"
-				id="message"
-				placeholder="Type your message here..."
-				onkeydown={(event: KeyboardEvent) => {
-					// Use a Slack-like submit behaviour: "Enter" submits. Any combo of Enter + CTRL, Shift, Alt will jump a line instead
-					const form = (event.target as HTMLElement).closest('form') as HTMLFormElement
-					if (event.key === 'Enter' && !event.altKey && !event.shiftKey && !event.metaKey) {
-						event.stopPropagation()
-						event.preventDefault()
-						form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
-					}
-				}}
-				bind:value={input}
-			></textarea>
-			<button type="submit" class="primary" disabled={chat.status !== 'ready'}
-				>Send / {chat.status}</button
+		{#if game && round && round.score}
+			<Score {game} {round} />
+			<button
+				class="primary"
+				onclick={async () => {
+					await convex.mutation(api.games.nextRound, {
+						gameId: page.params.gameId as Id<'games'>,
+					})
+				}}>Next round</button
 			>
-		</form>
+			<!-- If last round, show leaderboard or play again link if enough tickets -->
+		{:else}
+			<form id="message" onsubmit={handleSubmit}>
+				<textarea
+					name="message"
+					id="message"
+					placeholder="Type your message here..."
+					onkeydown={(event: KeyboardEvent) => {
+						// Use a Slack-like submit behaviour: "Enter" submits. Any combo of Enter + CTRL, Shift, Alt will jump a line instead
+						const form = (event.target as HTMLElement).closest('form') as HTMLFormElement
+						if (event.key === 'Enter' && !event.altKey && !event.shiftKey && !event.metaKey) {
+							event.stopPropagation()
+							event.preventDefault()
+							form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
+						}
+					}}
+					bind:value={input}
+				></textarea>
+				<button type="submit" class="primary" disabled={chat.status !== 'ready'}
+					>Send / {chat.status}</button
+				>
+			</form>
+		{/if}
 	</div>
 </main>
 
@@ -173,6 +191,32 @@
 		width: min(var(--narrow-page), 100%);
 		height: 100%;
 		justify-self: center;
+
+		header {
+			display: flex;
+			flex-flow: row nowrap;
+			justify-content: space-between;
+			align-items: center;
+			gap: 1rem;
+			font-size: 1.5rem;
+
+			#total {
+				display: flex;
+				flex-flow: row nowrap;
+				font-size: inherit;
+
+				output {
+					padding: 0.25rem 0.5rem;
+					background-color: var(--grey-200);
+					border-radius: 2rem;
+					position: relative;
+					box-sizing: initial;
+					display: inline-block;
+					text-align: right;
+					font-variant-numeric: tabular-nums;
+				}
+			}
+		}
 	}
 
 	#actions {
@@ -201,6 +245,21 @@
 			text-align: start;
 			justify-content: start;
 			gap: 0.25rem 0.5rem;
+			padding: 0.5rem 1rem;
+			border-radius: 3rem;
+			--color: var(--grey-100);
+			border: 1px solid var(--color);
+			background-color: color-mix(in oklab, var(--color) 10%, transparent);
+
+			&.selected {
+				&:not(.correct) {
+					--color: var(--red);
+				}
+			}
+
+			&.correct {
+				--color: var(--green);
+			}
 
 			img {
 				aspect-ratio: 1;

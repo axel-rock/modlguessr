@@ -20,20 +20,37 @@ export const message = z.object({
 	timestamp: z.number(),
 }) satisfies z.ZodType<UIMessage>
 
-export const games = z.object({
+export const score = z.object({
+	base: z.number(), // Base points for correct answer
+	time: z.number(), // Time bonus/penalty
+	streak: z.number(), // Current streak multiplier
+	revealed: z.number(), // Bonus from forcing a model to reveal itself
+	total: z.number(),
+})
+
+const round = z.object({
+	started_at: z.optional(z.number()),
+	ended_at: z.optional(z.number()),
+	model: z.string(),
+	models: z.array(z.string()),
+	answer: z.optional(z.string()),
+	messages: z.array(message),
+	score: z.optional(score),
+})
+
+export const game = z.object({
 	user_id: z.string(),
-	score: z.optional(z.number()),
+	score: z.optional(z.number()), // Total score
 	difficulty: z.enum(['easy', 'medium', 'hard']),
 	mode: z.enum(['simple']),
-	rounds: z.array(
-		z.object({
-			started_at: z.number(),
-			model: z.string(),
-			models: z.array(z.string()),
-			messages: z.array(message),
-		})
-	),
+	rounds: z.array(round),
 	started_at: z.optional(z.number()),
 	ended_at: z.optional(z.number()),
 	live: z.boolean(),
 })
+
+export const public_game = game
+	.omit({ rounds: true })
+	.extend({ rounds: z.array(round.partial({ model: true })) })
+/** Game object representation for the front-end */
+export type Game = z.infer<typeof public_game>
