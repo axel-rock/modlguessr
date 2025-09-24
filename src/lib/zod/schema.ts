@@ -17,6 +17,7 @@ export const message = z.object({
 	id: z.string(),
 	role: z.enum(['assistant', 'system', 'user']),
 	parts: z.array(z.union([ReasoningUIPartSchema, TextUIPartSchema])),
+	metadata: z.optional(z.record(z.string(), z.unknown())),
 	timestamp: z.number(),
 }) satisfies z.ZodType<UIMessage>
 

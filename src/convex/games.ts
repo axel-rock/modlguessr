@@ -1,4 +1,5 @@
-import type { Doc, Id } from '$convex/dataModel'
+import type { DataModel, Doc, Id } from '$convex/dataModel'
+import { TableAggregate, DirectAggregate } from '@convex-dev/aggregate'
 import {
 	action,
 	internalMutation,
@@ -11,7 +12,7 @@ import { game, message as messageSchema, score } from '$lib/zod/schema'
 import { zodOutputToConvex } from 'convex-helpers/server/zod'
 import { v } from 'convex/values'
 import { autumn } from './autumn'
-import { api, internal } from '$convex/api'
+import { api, internal, components } from '$convex/api'
 import {
 	convertToModelMessages,
 	generateObject,
@@ -22,6 +23,7 @@ import {
 } from 'ai'
 import { MODEL_SETS } from '$lib/models'
 import z from 'zod'
+import { tokenAggregate } from './stats'
 
 const BASE_POINTS = 100
 
@@ -93,7 +95,6 @@ export const nextRound = mutation({
 		if (!game) throw new Error('Game not found')
 
 		const models = getRandomSet(MODEL_SETS, game.difficulty)
-		console.log({ models })
 		const model = getRandomModel(models)
 
 		const round: Doc<'games'>['rounds'][number] = {
@@ -286,18 +287,29 @@ export const stream = httpAction(async (ctx, request) => {
 		model: round.model,
 		system: SYSTEM_PROMPT,
 		messages: convertToModelMessages(messages),
-		onFinish: async ({ content: parts, usage, finishReason, response }) => {
+		onFinish: async ({ content: parts, providerMetadata, usage, finishReason, response }) => {
 			/** Assistant message */
 			const message = {
 				id: response.id,
 				role: 'assistant' as const,
 				parts: parts as TextUIPart[],
 				timestamp: Date.now(),
+				metadata: {
+					...providerMetadata,
+					finishReason,
+					usage,
+				},
 			}
+			console.log({ usage })
 			await ctx.runMutation(internal.games.saveMessage, {
 				gameId: gameId as Id<'games'>,
 				roundIndex,
 				message,
+			})
+			await tokenAggregate.insert(ctx, {
+				id: response.id,
+				key: usage.totalTokens ?? 0,
+				sumValue: usage.totalTokens ?? 0,
 			})
 		},
 	})

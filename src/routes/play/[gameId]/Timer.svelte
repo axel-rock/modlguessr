@@ -21,8 +21,8 @@
 	<span>Waiting for the first message</span>
 {:else if round.ended_at}
 	{@const duration = (round.ended_at - round.started_at) / 1000}
-	<span>{duration.toFixed(2)}s</span>
+	<span>{duration.toFixed(1)}s</span>
 {:else}
 	{@const duration = (now - round.started_at) / 1000}
-	<span>{duration.toFixed(2)}s</span>
+	<span>{duration.toFixed(1)}s</span>
 {/if}

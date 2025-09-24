@@ -10,19 +10,4 @@ export default defineSchema({
 		user_id: v.string(),
 		balance: v.optional(v.number()),
 	}).index('by_user', ['user_id']),
-	// Streams table for persistent text streaming
-	// streams: defineTable({
-	// 	status: v.union(
-	// 		v.literal('pending'),
-	// 		v.literal('streaming'),
-	// 		v.literal('done'),
-	// 		v.literal('error'),
-	// 		v.literal('timeout')
-	// 	),
-	// }).index('by_status', ['status']),
-	// // Chunks table for storing stream chunks
-	// chunks: defineTable({
-	// 	streamId: v.id('streams'),
-	// 	text: v.string(),
-	// }).index('by_stream', ['streamId']),
 })
