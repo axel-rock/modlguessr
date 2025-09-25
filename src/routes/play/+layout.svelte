@@ -12,5 +12,14 @@
 {#if userQuery.data}
 	{@render children()}
 {:else}
-	<p>Loading...</p>
+	<main id="loading">
+		<p>Loading...</p>
+	</main>
 {/if}
+
+<style>
+	#loading {
+		display: grid;
+		place-items: center;
+	}
+</style>

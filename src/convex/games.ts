@@ -1,5 +1,5 @@
 import type { DataModel, Doc, Id } from '$convex/dataModel'
-import { TableAggregate, DirectAggregate } from '@convex-dev/aggregate'
+import { TableAggregate } from '@convex-dev/aggregate'
 import {
 	action,
 	internalMutation,
@@ -24,21 +24,33 @@ import {
 import { MODEL_SETS } from '$lib/models'
 import z from 'zod'
 import { tokenAggregate } from './stats'
+import { MAX_ROUNDS, BASE_POINTS } from '$lib/constants'
 
-const BASE_POINTS = 100
+export const leaderboardAggregate = new TableAggregate<{
+	Namespace: string // difficulty only
+	Key: number
+	DataModel: DataModel
+	TableName: 'games'
+}>(components.aggregateScores, {
+	namespace: (doc) => doc.difficulty,
+	sortKey: (doc) => doc.score ?? 0,
+})
 
-const SYSTEM_PROMPT = `You are participating in a guessing game where the human is trying to identify which AI model you are. Don't directly reveal your name, creator, or company, but you may naturally exhibit your typical response patterns and knowledge. Avoid obvious giveaways like "I'm Claude" or "I was made by Anthropic" but otherwise respond naturally to questions about your capabilities, training, or preferences.`
-// const SYSTEM_PROMPT = `You are participating in a guessing game where the human is trying to identify which AI model you are. Be extremely careful not to reveal ANY identifying information:
+const SYSTEM_PROMPT = {
+	easy: `You are participating in a guessing game where the human is trying to identify which AI model you are. The game is on EAST mode. You're allowed to answer, but try to do it by using very simple riddles or hints.`,
+	medium: `You are participating in a guessing game where the human is trying to identify which AI model you are. Don't directly reveal your name, creator, or company, but you may naturally exhibit your typical response patterns and knowledge. Avoid obvious giveaways like "I'm Claude" or "I was made by Anthropic" but otherwise respond naturally to questions about your capabilities, training, or preferences.`,
+	hard: `You are participating in a guessing game where the human is trying to identify which AI model you are. Be extremely careful not to reveal ANY identifying information:
 
-// - Never mention your name, creator, company, or training details
-// - Avoid characteristic phrases you typically use
-// - Don't reveal knowledge cutoffs or specific capabilities
-// - Give generic responses about your nature ("I'm an AI assistant")
-// - Vary your response style and length to avoid patterns
-// - If asked direct questions about identity, deflect politely
-// - Act like a generic, anonymous AI assistant
+- Never mention your name, creator, company, or training details
+- Avoid characteristic phrases you typically use
+- Don't reveal knowledge cutoffs or specific capabilities
+- Give generic responses about your nature ("I'm an AI assistant")
+- Vary your response style and length to avoid patterns
+- If asked direct questions about identity, deflect politely
+- Act like a generic, anonymous AI assistant
 
-// The human is trying to trick you - stay vigilant!`
+The human is trying to trick you - stay vigilant!`,
+}
 
 // Create has to be an action to call autumn.track...
 export const create = action({
@@ -120,13 +132,23 @@ export const get = query({
 		// Remove model details from the rounds (messages are already embedded)
 		const rounds = game.rounds.map((round) => ({
 			...round,
-			model: round.ended_at ? round.model : undefined,
+			model: round.answer ? round.model : undefined,
 		}))
 
 		return {
 			...game,
 			rounds,
 		}
+	},
+})
+
+/** Temporary function to check the games in DB until we get leaderboard */
+export const list = query({
+	args: {
+		limit: v.optional(v.number()),
+	},
+	handler: async (ctx, { limit = 50 }) => {
+		return ctx.db.query('games').take(limit)
 	},
 })
 
@@ -157,8 +179,11 @@ export const pick = action({
 			apiKey: process.env.ADMIN_API_KEY,
 		})
 		if (!game) throw new Error('Game not found')
+		if (!game.live) return undefined
+		if (roundIndex > MAX_ROUNDS) throw new Error('Max rounds reached')
 		const round = game.rounds.at(roundIndex)
 		if (!round) throw new Error('Round not found')
+		if (round.answer) throw new Error('Round already answered')
 
 		const previousRound = game.rounds.at(roundIndex - 1)
 
@@ -185,8 +210,24 @@ export const pick = action({
 
 		await ctx.runMutation(internal.games.saveScore, { gameId, answer: model, roundIndex, score })
 
+		if (roundIndex === MAX_ROUNDS - 1) {
+			await ctx.runMutation(internal.games.endGame, { gameId })
+		}
+
 		if (round.model === model) return { success: true }
 		return { success: false }
+	},
+})
+
+export const endGame = internalMutation({
+	args: {
+		gameId: v.id('games'),
+	},
+	handler: async (ctx, { gameId }) => {
+		const game = await ctx.db.get(gameId)
+		if (!game) throw new Error('Game not found')
+		await leaderboardAggregate.insert(ctx, game)
+		await ctx.db.patch(gameId, { ended_at: Date.now() })
 	},
 })
 
@@ -214,7 +255,7 @@ export const evaluate = internalAction({
 `,
 			messages: convertToModelMessages(messages),
 		}).catch((error) => {
-			console.error(error)
+			// console.error(error)
 			return { object: 'none' }
 		})
 		return analysis.object
@@ -251,24 +292,24 @@ export const stream = httpAction(async (ctx, request) => {
 		messages: UIMessage[]
 	}
 
+	// Get the game and model info
+	const game = await ctx.runQuery(api.games.getWithModelDetails, {
+		gameId: gameId as Id<'games'>,
+		apiKey: process.env.ADMIN_API_KEY,
+	})
+	if (!game) throw new Error('Game not found')
+	if (game.ended_at) throw new Error('Game has ended')
+	const round = game.rounds.at(roundIndex)
+	if (!round) throw new Error('Round not found')
+
 	/** User message */
 	const message = messageSchema.parse({
 		...messages[messages.length - 1],
 		timestamp: Date.now(),
 	})
 
-	// Get the game and model info
-	const game = await ctx.runQuery(api.games.getWithModelDetails, {
-		gameId: gameId as Id<'games'>,
-		apiKey: process.env.ADMIN_API_KEY,
-	})
-
-	if (!game) throw new Error('Game not found')
-	const round = game.rounds.at(roundIndex)
-	if (!round) throw new Error('Round not found')
-
 	// If the round has no user message, set the start time to now
-	if (!round.messages.find((m) => m.role === 'user')) {
+	if (!round.messages.find((m: UIMessage) => m.role === 'user')) {
 		round.started_at = Date.now()
 		await ctx.runMutation(internal.games.startRound, {
 			gameId: gameId as Id<'games'>,
@@ -285,7 +326,7 @@ export const stream = httpAction(async (ctx, request) => {
 
 	const result = streamText({
 		model: round.model,
-		system: SYSTEM_PROMPT,
+		system: SYSTEM_PROMPT[game.difficulty],
 		messages: convertToModelMessages(messages),
 		onFinish: async ({ content: parts, providerMetadata, usage, finishReason, response }) => {
 			/** Assistant message */
@@ -300,7 +341,6 @@ export const stream = httpAction(async (ctx, request) => {
 					usage,
 				},
 			}
-			console.log({ usage })
 			await ctx.runMutation(internal.games.saveMessage, {
 				gameId: gameId as Id<'games'>,
 				roundIndex,
@@ -347,10 +387,11 @@ export const startRound = internalMutation({
 		started_at: v.number(),
 	},
 	handler: async (ctx, { gameId, roundIndex, started_at }) => {
+		if (roundIndex >= MAX_ROUNDS) throw new Error('Max rounds reached')
 		const game = await ctx.db.get(gameId)
 		if (!game) throw new Error('Game not found')
 		game.rounds[roundIndex].started_at = started_at
-		await ctx.db.patch(gameId, { rounds: game.rounds })
+		await ctx.db.patch(gameId, { rounds: game.rounds, live: true })
 	},
 })
 
@@ -377,3 +418,29 @@ function getRandomSet(sets: typeof MODEL_SETS, difficulty: 'easy' | 'medium' | '
 function getRandomModel(models: string[]) {
 	return models[~~(Math.random() * models.length)]
 }
+
+// Get leaderboard for a specific difficulty
+export const getLeaderboard = query({
+	args: {
+		difficulty: v.string(),
+		limit: v.optional(v.number()),
+	},
+	handler: async (ctx, { difficulty, limit = 50 }) => {
+		const result = await leaderboardAggregate.paginate(ctx, {
+			namespace: difficulty,
+			order: 'desc',
+			pageSize: limit,
+		})
+
+		return Promise.all(
+			result.page.map(async (item) => {
+				const game = await ctx.db.get(item.id)
+				return {
+					user_id: game!.user_id,
+					score: item.key,
+					gameId: game!._id,
+				}
+			})
+		)
+	},
+})

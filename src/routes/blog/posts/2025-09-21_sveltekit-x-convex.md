@@ -25,6 +25,7 @@ Imagine this:
 - Your `+page.server.ts` files actually run on Convex's blazing-fast Rust V8 engine
 - Your load functions become Convex queries
 - Your form actions transform into mutations or actions
+- Leverage the brand new remote functions
 - SvelteKit hooks pass context seamlessly
 - And here's the kicker – your server-side data magically becomes reactive state on the frontend through `useQuery` and SvelteKit's [Transport](https://svelte.dev/docs/kit/hooks#Universal-hooks-transport).
 

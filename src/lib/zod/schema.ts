@@ -2,15 +2,19 @@
 
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zod'
-import type { UIMessage } from 'ai'
+import { type UIMessage } from 'ai'
 
 const TextUIPartSchema = z.object({
 	type: z.literal('text'),
 	text: z.string(),
+	state: z.optional(z.enum(['streaming', 'done'])),
+	providerMetadata: z.optional(z.record(z.string(), z.any())),
 })
 const ReasoningUIPartSchema = z.object({
 	type: z.literal('reasoning'),
 	text: z.string(),
+	state: z.optional(z.enum(['streaming', 'done'])),
+	providerMetadata: z.optional(z.record(z.string(), z.any())),
 })
 
 export const message = z.object({

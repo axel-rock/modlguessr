@@ -6,10 +6,11 @@
 	import '$lib/css/style.css'
 	import { useConvexClient, useQuery } from 'convex-svelte'
 	import { api } from '$convex/api'
-	import { goto, invalidateAll } from '$app/navigation'
+	import { invalidateAll } from '$app/navigation'
 	import { context } from '$lib/context.svelte'
 	import { page } from '$app/state'
 	import Footer from '../lib/components/Footer.svelte'
+	// import Toast from '$lib/components/Toast.svelte'
 
 	let { data, children } = $props()
 	createSvelteAuthClient({ authClient })
@@ -27,8 +28,8 @@
 	})
 
 	$effect(() => {
-		// @ts-expect-error
 		context.user = user
+		context.tickets = tickets
 	})
 </script>
 
@@ -40,21 +41,9 @@
 	<h1>
 		<a href="/"> ModlGuessr </a>
 	</h1>
-	<button
-		id="play"
-		class="primary"
-		onclick={async () => {
-			const gameId = await convex.action(api.games.create, {
-				game: {
-					mode: 'simple',
-					difficulty: 'easy',
-				},
-			})
-			goto(`/play/${gameId}`)
-		}}
-	>
+	<a href="/play" id="play">
 		{@html play}
-	</button>
+	</a>
 	<nav>
 		{#if !!tickets}
 			<span>{tickets} tickets</span>
@@ -103,6 +92,8 @@
 {#if !page.route.id?.startsWith('/play')}
 	<Footer />
 {/if}
+
+<!-- <Toast /> -->
 
 <style>
 	header {

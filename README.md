@@ -75,7 +75,7 @@ As the main goal is to explore the stack, here are some features we can implemen
 - [x] Setup Convex
 - [x] Setup Better Auth
   - [x] Google Auth
-  - [ ] Username plugin
+  - [-] Username plugin
   - [ ] Find out and implement other relevant providers
 - [-] Setup Autumn
   - [x] Define plans
@@ -88,7 +88,14 @@ As the main goal is to explore the stack, here are some features we can implemen
   - [ ] Autumn prod is used
 - [x] Create a blog to document learnings
 - [ ] Gameplay with AI SDK
-  - [ ] Find fun game loops
+  - [x] Find fun game loops
+  - [x] Create game rounds
+  - [x] Save messages
+  - [x] Display result and score
+  - [x] Move to next round
+  - [ ] Save final game score
+  - [ ] Enter data in leaderboard
+  - [ ] Suggest next-game
   - [ ] Different difficulty level
 - [ ] Leaderboard
 - [ ] Analytics

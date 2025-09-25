@@ -17,6 +17,7 @@
 	import { type Game } from '$lib/zod/schema'
 	import { Tween } from 'svelte/motion'
 	import Timer from './Timer.svelte'
+	import { MAX_ROUNDS } from '$lib/constants'
 
 	// let { data }: PageProps = $props()
 
@@ -25,6 +26,8 @@
 			gameId: page.params.gameId as Id<'games'>,
 		})
 	)
+
+	let selected: string | undefined = $state(undefined)
 
 	let game = $state<Game | undefined>(undefined)
 	const roundNumber = $derived(game?.rounds.length ?? 0)
@@ -42,6 +45,10 @@
 
 	$effect(() => {
 		total.set(game?.score ?? 0)
+	})
+
+	$effect(() => {
+		selected = round?.answer ?? undefined
 	})
 
 	const convex = useConvexClient()
@@ -92,11 +99,16 @@
 	})
 
 	async function pick(model: string) {
-		const result = await convex.action(api.games.pick, {
-			gameId: page.params.gameId as Id<'games'>,
-			roundIndex,
-			model,
-		})
+		selected = model
+		await convex
+			.action(api.games.pick, {
+				gameId: page.params.gameId as Id<'games'>,
+				roundIndex,
+				model,
+			})
+			.catch((error) => {
+				console.error(error)
+			})
 	}
 </script>
 
@@ -110,20 +122,14 @@
 			Ask me anything to guess who I am!
 		</h1>
 	{:else}
-		<ul in:fly={{ y: 50, duration: 200, delay: 200, easing: sineIn }}>
+		<ul id="messages" in:fly={{ y: 50, duration: 200, delay: 200, easing: sineIn }}>
 			{#each messages as message}
-				<li>
-					<div class="message-header">
-						<span class="role">{message.role === 'user' ? 'You' : 'AI'}</span>
-						<span class="timestamp">{new Date().toLocaleTimeString()}</span>
-					</div>
-					<div class="message-content">
-						{#each message.parts as part, partIndex (partIndex)}
-							{#if part.type === 'text' && part.text}
-								<div>{@html marked(part.text)}</div>
-							{/if}
-						{/each}
-					</div>
+				<li class="message {message.role}">
+					{#each message.parts as part, partIndex (partIndex)}
+						{#if part.type === 'text' && part.text}
+							<div>{@html marked(part.text)}</div>
+						{/if}
+					{/each}
 				</li>
 			{/each}
 		</ul>
@@ -139,8 +145,12 @@
 					name="model"
 					animate:flip={{ duration: 250, easing: sineInOut }}
 					onclick={() => pick(model)}
-					class:selected={round?.answer === model}
+					class:selected={selected === model}
 					class:correct={round?.model === model}
+					class:incorrect={round?.answer === model && round?.model !== model}
+					disabled={!game?.live ||
+						round?.answer !== undefined ||
+						(round?.messages?.length ?? 0) < 2}
 				>
 					<img src="/logo/{provider}.svg" alt={provider} />
 					<span class="name">{name}</span>
@@ -148,17 +158,24 @@
 				</button>
 			{/each}
 		</menu>
+
 		{#if game && round && round.score}
-			<Score {game} {round} />
-			<button
-				class="primary"
-				onclick={async () => {
-					await convex.mutation(api.games.nextRound, {
-						gameId: page.params.gameId as Id<'games'>,
-					})
-				}}>Next round</button
-			>
-			<!-- If last round, show leaderboard or play again link if enough tickets -->
+			{#if game.ended_at}
+				<div id="end-game">
+					<a href="/leaderboard" role="button" class="primary">Leaderboard</a>
+					<a href="/play" role="button" class="primary">Play again</a>
+				</div>
+			{:else}
+				<Score {game} {round} />
+				<button
+					class="primary"
+					onclick={async () => {
+						await convex.mutation(api.games.nextRound, {
+							gameId: page.params.gameId as Id<'games'>,
+						})
+					}}>Next round</button
+				>
+			{/if}
 		{:else}
 			<form id="message" onsubmit={handleSubmit}>
 				<textarea
@@ -219,6 +236,31 @@
 		}
 	}
 
+	#messages {
+		display: grid;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+
+		.message {
+			max-width: min(60ch, 85%);
+			font-size: 1.2em;
+			scroll-snap-align: start;
+			scroll-snap-stop: always;
+			letter-spacing: -0.02em;
+			text-wrap: pretty;
+
+			&.assistant {
+				justify-self: start;
+			}
+
+			&.user {
+				justify-self: end;
+				color: var(--grey-600);
+			}
+		}
+	}
+
 	#actions {
 		position: sticky;
 		bottom: 0;
@@ -227,6 +269,22 @@
 		padding: 1rem 0;
 		display: grid;
 		gap: 1rem;
+	}
+
+	#end-game {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+		gap: 1rem;
+
+		a {
+			text-align: center;
+
+			&[href='/leaderboard'] {
+				/* Leaderboard yellow */
+				background-color: #ffd600;
+				color: #000;
+			}
+		}
 	}
 
 	menu#vote {
@@ -252,11 +310,11 @@
 			background-color: color-mix(in oklab, var(--color) 10%, transparent);
 
 			&.selected {
-				&:not(.correct) {
-					--color: var(--red);
-				}
+				--color: var(--grey-200);
 			}
-
+			&.incorrect {
+				--color: var(--red);
+			}
 			&.correct {
 				--color: var(--green);
 			}
@@ -265,6 +323,13 @@
 				aspect-ratio: 1;
 				object-fit: contain;
 				grid-row: span 2;
+			}
+
+			.name,
+			.provider {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
 			}
 
 			.provider {

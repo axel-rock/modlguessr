@@ -41,7 +41,8 @@
 	tab-size: 4;
 }
 
-ul:is(.grid, .no-bullet) {
+ul:is(.grid, .no-bullet),
+menu {
 	list-style: none;
 	padding: 0;
 	margin: 0;
