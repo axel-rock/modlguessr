@@ -52,7 +52,7 @@
 		<ul>
 			{#each leaderboard as entry (entry)}
 				<li animate:flip={{ duration: 250, easing: sineInOut }}>
-					{entry.user_id} - {entry.score}
+					{entry.user?.displayUsername} - {entry.score}
 				</li>
 			{/each}
 		</ul>

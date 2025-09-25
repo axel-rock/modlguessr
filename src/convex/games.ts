@@ -25,6 +25,7 @@ import { MODEL_SETS } from '$lib/models'
 import z from 'zod'
 import { tokenAggregate } from './stats'
 import { MAX_ROUNDS, BASE_POINTS } from '$lib/constants'
+import { authComponent, createAuth } from './auth'
 
 export const leaderboardAggregate = new TableAggregate<{
 	Namespace: string // difficulty only
@@ -431,14 +432,20 @@ export const getLeaderboard = query({
 			order: 'desc',
 			pageSize: limit,
 		})
-
 		return Promise.all(
 			result.page.map(async (item) => {
 				const game = await ctx.db.get(item.id)
+				const user = await authComponent.getAnyUserById(ctx, game!.user_id)
 				return {
 					user_id: game!.user_id,
 					score: item.key,
 					gameId: game!._id,
+					user: {
+						username: user!.username,
+						displayUsername: user!.displayUsername,
+						image: user!.image,
+						id: user!.userId,
+					},
 				}
 			})
 		)

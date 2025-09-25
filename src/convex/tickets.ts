@@ -3,7 +3,6 @@
  * It might not be necessary in the future, and there are alternative ways to get the info, just not as reactive.
  */
 
-import type { Id } from '$convex/dataModel'
 import { action, internalMutation, query } from '$convex/server'
 import { v } from 'convex/values'
 import { autumn } from './autumn'
@@ -51,7 +50,7 @@ export const get = query({
 			console.warn('Not authenticated')
 			return null
 		}
-		const user_id = identity.subject as Id<'users'>
+		const user_id = identity.subject as string
 		const data = await ctx.db
 			.query('tickets')
 			.withIndex('by_user', (q) => q.eq('user_id', user_id))
