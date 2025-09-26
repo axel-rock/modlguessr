@@ -1,31 +1,34 @@
+import { api, components, internal } from '$convex/api'
 import type { DataModel, Doc, Id } from '$convex/dataModel'
+import { BASE_POINTS, MAX_ROUNDS } from '$lib/constants'
+import { MODEL_SETS } from '$lib/models'
+import { game, message as messageSchema, score } from '$lib/zod/schema'
 import { TableAggregate } from '@convex-dev/aggregate'
 import {
-	action,
-	internalMutation,
-	mutation,
-	query,
-	httpAction,
-	internalAction,
-} from './_generated/server'
-import { game, message as messageSchema, score } from '$lib/zod/schema'
-import { zodOutputToConvex } from 'convex-helpers/server/zod'
-import { v } from 'convex/values'
-import { autumn } from './autumn'
-import { api, internal, components } from '$convex/api'
-import {
 	convertToModelMessages,
+	// gateway,
 	generateObject,
 	streamText,
 	validateUIMessages,
 	type TextUIPart,
 	type UIMessage,
 } from 'ai'
-import { MODEL_SETS } from '$lib/models'
+import { zodOutputToConvex } from 'convex-helpers/server/zod'
+import { v } from 'convex/values'
 import z from 'zod'
-import { tokenAggregate } from './stats'
-import { MAX_ROUNDS, BASE_POINTS } from '$lib/constants'
+import {
+	action,
+	httpAction,
+	internalAction,
+	internalMutation,
+	mutation,
+	query,
+} from './_generated/server'
 import { authComponent, createAuth } from './auth'
+import { autumn } from './autumn'
+import { tokenAggregate } from './stats'
+
+// const availableModels = await gateway.getAvailableModels();
 
 export const leaderboardAggregate = new TableAggregate<{
 	Namespace: string // difficulty only

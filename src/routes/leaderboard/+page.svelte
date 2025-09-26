@@ -26,18 +26,24 @@
 
 		<menu>
 			<li>
-				<button onclick={() => (difficulty = 'easy')} class:selected={difficulty === 'easy'}
-					>Easy</button
+				<button
+					onclick={() => (difficulty = 'easy')}
+					class="big"
+					class:selected={difficulty === 'easy'}>Easy</button
 				>
 			</li>
 			<li>
-				<button onclick={() => (difficulty = 'medium')} class:selected={difficulty === 'medium'}
-					>Medium</button
+				<button
+					onclick={() => (difficulty = 'medium')}
+					class="big"
+					class:selected={difficulty === 'medium'}>Medium</button
 				>
 			</li>
 			<li>
-				<button onclick={() => (difficulty = 'hard')} class:selected={difficulty === 'hard'}
-					>Hard</button
+				<button
+					onclick={() => (difficulty = 'hard')}
+					class="big"
+					class:selected={difficulty === 'hard'}>Hard</button
 				>
 			</li>
 		</menu>

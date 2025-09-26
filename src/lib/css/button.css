@@ -22,11 +22,17 @@
 	outline-color: color-mix(in oklab, var(--brand) 90%, transparent);
 
 	&:not(label, .label) {
-		min-height: 4rem;
-		font-size: 1.5rem;
+		min-height: 2rem;
+		font-size: 1rem;
 		padding-inline: 1.5rem;
-		border-radius: 2rem;
+		border-radius: 1rem;
 		overflow: hidden;
+
+		&.big {
+			font-size: 1.5rem;
+			min-height: 4rem;
+			border-radius: 2rem;
+		}
 	}
 
 	&.medium {

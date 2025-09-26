@@ -75,14 +75,14 @@ As the main goal is to explore the stack, here are some features we can implemen
 - [x] Setup Convex
 - [x] Setup Better Auth
   - [x] Google Auth
-  - [-] Username plugin
+  - [x] Username plugin
   - [ ] Find out and implement other relevant providers
 - [-] Setup Autumn
   - [x] Define plans
   - [x] Show and track feature (tickets to play a game)
-  - [ ] Implement and test payment
+  - [x] Implement and test payment
 - [ ] CD Pipeline
-  - [ ] Deploy on Vercel
+  - [x] Deploy on Vercel
   - [ ] Auth is working
   - [ ] Convex prod is used
   - [ ] Autumn prod is used
@@ -93,11 +93,11 @@ As the main goal is to explore the stack, here are some features we can implemen
   - [x] Save messages
   - [x] Display result and score
   - [x] Move to next round
-  - [ ] Save final game score
-  - [ ] Enter data in leaderboard
+  - [x] Save final game score
+  - [x] Enter data in leaderboard
   - [ ] Suggest next-game
   - [ ] Different difficulty level
-- [ ] Leaderboard
+- [x] Leaderboard
 - [ ] Analytics
 - [ ] Homepage
 - [ ] Referral program (Autumn + Resend)

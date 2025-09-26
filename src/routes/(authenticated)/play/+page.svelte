@@ -7,7 +7,7 @@
 	// let { data }: PageProps = $props()
 	const convex = useConvexClient()
 
-	async function onclick(difficulty: 'easy' | 'medium' | 'hard') {
+	async function createGame(difficulty: 'easy' | 'medium' | 'hard') {
 		const gameId = await convex.action(api.games.create, {
 			game: {
 				mode: 'simple',
@@ -20,9 +20,9 @@
 
 <main>
 	<menu id="difficulties">
-		<li><button onclick={() => onclick('easy')}>Easy</button></li>
-		<li><button onclick={() => onclick('medium')}>Medium</button></li>
-		<li><button onclick={() => onclick('hard')}>Hard</button></li>
+		<li><button id="easy" onclick={() => createGame('easy')}>Easy</button></li>
+		<li><button id="medium" onclick={() => createGame('medium')}>Medium</button></li>
+		<li><button id="hard" onclick={() => createGame('hard')}>Hard</button></li>
 	</menu>
 </main>
 

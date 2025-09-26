@@ -31,6 +31,13 @@
 		context.user = user
 		context.tickets = tickets
 	})
+
+	async function billingPortal() {
+		const { data } = await convex.action(api.autumn.billingPortal, {
+			returnUrl: page.url.href,
+		})
+		if (data?.url) window.location.href = data.url
+	}
 </script>
 
 <svelte:head>
@@ -63,21 +70,28 @@
 
 {#if user}
 	<menu id="user-menu" popover="auto">
-		<a
-			href="/settings"
-			role="button"
-			onclick={(event) => {
-				const link = event.target as HTMLAnchorElement
-				const popover = link.closest('[popover="auto"]') as HTMLElement
-				popover.hidePopover()
-			}}>Settings</a
-		>
-		<button
-			onclick={async () => {
-				await authClient.signOut()
-				await invalidateAll()
-			}}>Sign out</button
-		>
+		<li>
+			<button class="link" onclick={async () => billingPortal()}>Billing Portal</button>
+		</li>
+		<li>
+			<a
+				href="/settings"
+				onclick={(event) => {
+					const link = event.target as HTMLAnchorElement
+					const popover = link.closest('[popover="auto"]') as HTMLElement
+					popover.hidePopover()
+				}}>Settings</a
+			>
+		</li>
+		<li>
+			<button
+				class="link"
+				onclick={async () => {
+					await authClient.signOut()
+					await invalidateAll()
+				}}>Sign out</button
+			>
+		</li>
 	</menu>
 {/if}
 
@@ -132,7 +146,6 @@
 
 	#user-menu-button {
 		anchor-name: --user-menu-button;
-		position: relative;
 	}
 
 	menu#user-menu {
@@ -141,6 +154,7 @@
 		position-area: bottom span-left;
 		margin: 0;
 		inset: auto;
+		padding: 1rem;
 
 		/* Reset popover styles */
 		border: none;
@@ -151,6 +165,11 @@
 
 		/* Animate in from the top */
 		animation: slide-in 0.1s ease-out;
+
+		&:popover-open {
+			display: grid;
+			gap: 0.5rem;
+		}
 	}
 
 	@keyframes slide-in {

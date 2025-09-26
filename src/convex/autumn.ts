@@ -1,3 +1,4 @@
+import { action } from './_generated/server.js'
 import { components } from './_generated/api'
 import { Autumn } from '@useautumn/convex'
 
@@ -37,3 +38,14 @@ export const {
 	createEntity,
 	getEntity,
 } = autumn.api()
+
+export const getActiveProducts = action({
+	args: {},
+	handler: async (ctx) => {
+		const user = await ctx.auth.getUserIdentity()
+		if (!user) return null
+		const customer = await autumn.customers.get(ctx, {})
+		if (!customer) return null
+		return customer.data?.products ?? []
+	},
+})
