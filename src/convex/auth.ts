@@ -1,10 +1,12 @@
 import { createClient, type AuthFunctions, type GenericCtx } from '@convex-dev/better-auth'
 import { convex } from '@convex-dev/better-auth/plugins'
 import { components, internal } from './_generated/api.js'
-import { query } from './_generated/server.js'
+import { action, query } from './_generated/server.js'
 import type { DataModel } from './_generated/dataModel.js'
 import { betterAuth } from 'better-auth'
 import { username } from 'better-auth/plugins'
+import { generateObject } from 'ai'
+import z from 'zod'
 
 const PUBLIC_GOOGLE_CLIENT_ID = process.env.PUBLIC_GOOGLE_CLIENT_ID as string
 const PRIVATE_GOOGLE_CLIENT_SECRET = process.env.PRIVATE_GOOGLE_CLIENT_SECRET as string

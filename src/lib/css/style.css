@@ -1,20 +1,10 @@
 @import './reset.css';
 @import './layout.css';
-/* @import './wrapper.css'; */
-/* @import './nav.css'; */
 @import './colors.css';
 @import './typography.css';
-/* @import './document.css'; */
 @import './form.css';
 @import './button.css';
-@import './table.css';
 @import './utils.css';
-/* @import './tiles.css'; */
-/* @import './dialog.css'; */
-/* @import './hotkey.css'; */
-/* @import './mask.css'; */
-/* @import './shadow.css'; */
-/* @import './alert.css'; */
 
 :root {
 	/* Colors */
@@ -22,16 +12,28 @@
 	--brand-contrast: #fff;
 	--narrow-page: 80ch;
 	--background-color: var(--grey-0);
+	--yellow: #ffd600;
+	--pink: #ff66c8;
 
 	background-color: var(--background-color);
 	color: var(--grey-800);
 
 	&:has(main#leaderboard) {
-		--background-color: #ffd600;
+		--background-color: var(--yellow);
 		header,
 		main {
 			* {
 				color: #000;
+			}
+		}
+	}
+
+	&:has(main#pricing) {
+		--background-color: var(--pink);
+		header,
+		main {
+			* {
+				color: #fff;
 			}
 		}
 	}
@@ -51,10 +53,11 @@ html {
 
 body > div > main {
 	h1.hero {
-		font-weight: 500;
+		font-weight: 800;
 		letter-spacing: -0.02em;
 		font-size: 4rem;
 		margin-block: 4rem;
+		text-align: center;
 	}
 
 	h2.hero {

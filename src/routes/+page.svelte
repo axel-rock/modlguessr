@@ -22,20 +22,27 @@
 	<h1 class="hero">Can you guess the model?</h1>
 
 	<p>
-		Can you guess which model you're talking to? They are instructed to not reveal this information,
-		so you'll have to find some little clues here and there or use your best prompt engineering
-		techniques. Bonus points if you manage to force them to tell you who they are.
+		Chat with mystery AI models and use your detective skills to figure out who you're talking to.
+		They won't tell you directly, so you'll need to find those subtle clues and quirks that make
+		each model unique.
 	</p>
 
 	{#if tokensQuery.data}
-		{@const total = new Intl.NumberFormat('fr-FR', {
+		{@const total = new Intl.NumberFormat(undefined, {
 			notation: 'standard',
 		}).format(~~tokens.current)}
-		<p>Total tokens: <output>{total}</output></p>
+		<h2>Total tokens: <output>{total}</output></h2>
 	{/if}
 </main>
 
 <style>
+	p {
+		text-align: center;
+		max-width: 60ch;
+		text-wrap: pretty;
+		justify-self: center;
+	}
+
 	output {
 		font-variant-numeric: tabular-nums;
 	}

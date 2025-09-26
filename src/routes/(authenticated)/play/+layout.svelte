@@ -2,23 +2,29 @@
 	import { useQuery } from 'convex-svelte'
 	import type { LayoutProps } from './$types'
 	import { api } from '$convex/api'
+	import { goto } from '$app/navigation'
+	import { page } from '$app/state'
 
 	let { data, children }: LayoutProps = $props()
 
 	let userQuery = useQuery(api.auth.getCurrentUser, {})
-	let user = $derived(userQuery.data)
+
+	/* User must have a username to play */
+	$effect(() => {
+		if (userQuery.data && !userQuery.data.username) goto('/settings?redirect=' + page.url.pathname)
+	})
 </script>
 
 {#if userQuery.data}
 	{@render children()}
 {:else}
-	<main id="loading">
+	<main>
 		<p>Loading...</p>
 	</main>
 {/if}
 
 <style>
-	#loading {
+	main {
 		display: grid;
 		place-items: center;
 	}

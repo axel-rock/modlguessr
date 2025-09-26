@@ -7,23 +7,6 @@
 
 	let { data }: PageProps = $props()
 
-	// Get leaderboard for simple/easy mode
-	// const leaderboard = await ctx.runQuery(api.leaderboard.getLeaderboard, {
-	//   mode: "simple",
-	//   difficulty: "easy",
-	//   limit: 20
-	// });
-
-	// // Check a player's rank
-	// const playerRank = await ctx.runQuery(api.leaderboard.getPlayerRank, {
-	//   mode: "simple",
-	//   difficulty: "easy",
-	//   user_id: "user123"
-	// });
-
-	// // Get current configuration
-	// const config = await ctx.runQuery(api.leaderboard.getConfig, {});
-
 	let difficulty = $state('easy')
 	let limit = $state(100)
 
@@ -34,25 +17,41 @@
 		})
 	)
 
-	const fullLeaderboard = $derived(leaderboardQuery.data ?? [])
-
-	const leaderboard = $derived(
-		fullLeaderboard
-		// .filter(
-		// 	// @ts-expect-error
-		// 	(entry, index, self) => self.findIndex((t) => t.user_id === entry.user_id) === index
-		// )
-	)
+	const leaderboard = $derived(leaderboardQuery.data ?? [])
 </script>
 
 <main id="leaderboard">
 	<div class="wrapper">
 		<h1 class="hero">Leaderboard</h1>
 
+		<menu>
+			<li>
+				<button onclick={() => (difficulty = 'easy')} class:selected={difficulty === 'easy'}
+					>Easy</button
+				>
+			</li>
+			<li>
+				<button onclick={() => (difficulty = 'medium')} class:selected={difficulty === 'medium'}
+					>Medium</button
+				>
+			</li>
+			<li>
+				<button onclick={() => (difficulty = 'hard')} class:selected={difficulty === 'hard'}
+					>Hard</button
+				>
+			</li>
+		</menu>
+
 		<ul>
-			{#each leaderboard as entry (entry)}
+			{#if leaderboard.length === 0}
+				<li>No entries</li>
+			{/if}
+			{#each leaderboard as entry, index (entry)}
 				<li animate:flip={{ duration: 250, easing: sineInOut }}>
-					{entry.user?.displayUsername} - {entry.score}
+					<span class="rank">#{index + 1}</span>
+					<img src={entry.user?.image} alt={entry.user?.displayUsername} />
+					<span class="username">{entry.user?.displayUsername}</span>
+					<span class="score">{entry.score}</span>
 				</li>
 			{/each}
 		</ul>
@@ -63,7 +62,7 @@
 	main {
 		width: 100%;
 		justify-self: center;
-		background-color: #ffd600;
+		background-color: var(--yellow);
 		color: #000;
 
 		& > .wrapper {
@@ -71,8 +70,57 @@
 			justify-self: center;
 		}
 
+		menu {
+			display: flex;
+			flex-flow: row nowrap;
+			justify-content: center;
+			gap: 1rem;
+
+			li {
+				display: contents;
+
+				button {
+					&.selected {
+						background-color: var(--grey-0) !important;
+						color: var(--grey-900) !important;
+					}
+				}
+			}
+		}
+
 		* {
 			color: inherit;
+		}
+
+		ul {
+			display: grid;
+			grid-template-columns: auto 2rem 1fr auto;
+			font-size: 2rem;
+
+			li {
+				display: grid;
+				grid-template-columns: subgrid;
+				grid-column: 1 / -1;
+				align-items: center;
+				font-variant-numeric: tabular-nums;
+
+				.rank {
+					justify-self: end;
+				}
+
+				img {
+					height: 2rem;
+					aspect-ratio: 1;
+					justify-self: center;
+					border-radius: 1rem;
+				}
+
+				.username {
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
+			}
 		}
 	}
 </style>

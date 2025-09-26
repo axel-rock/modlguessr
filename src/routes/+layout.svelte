@@ -38,9 +38,10 @@
 </svelte:head>
 
 <header>
-	<h1>
-		<a href="/"> ModlGuessr </a>
-	</h1>
+	<nav>
+		<a href="/">ModlGuessr</a>
+		<a href="/leaderboard">Leaderboard</a>
+	</nav>
 	<a href="/play" id="play">
 		{@html play}
 	</a>
@@ -48,7 +49,6 @@
 		{#if !!tickets}
 			<span>{tickets} tickets</span>
 		{/if}
-		<a href="/leaderboard">Leaderboard</a>
 		<a href="/pricing">Pricing</a>
 
 		{#if user}
@@ -56,12 +56,7 @@
 				<img src={user.image} alt={user.name} referrerPolicy="no-referrer" />
 			</button>
 		{:else}
-			<button
-				class="link auth"
-				onclick={async () => {
-					await authClient.signIn.social({ provider: 'google' })
-				}}>Sign in with Google</button
-			>
+			<a href="/login">Sign in</a>
 		{/if}
 	</nav>
 </header>
@@ -89,7 +84,7 @@
 {@render children?.()}
 
 <!-- Don't show footer on play page, the chat textarea takes up the bottom space -->
-{#if !page.route.id?.startsWith('/play')}
+{#if !page.route.id?.startsWith('/(authenticated)/play')}
 	<Footer />
 {/if}
 
@@ -102,11 +97,9 @@
 		align-items: center;
 		justify-content: space-between;
 
-		h1 {
-			a {
-				display: grid;
-				align-items: center;
-			}
+		a[href='/'] {
+			font-weight: 900;
+			font-size: 1.25rem;
 		}
 
 		nav {

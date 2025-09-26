@@ -19,24 +19,20 @@
 	)
 </script>
 
-<main>
-	<h1>Pricing</h1>
+<main id="pricing">
+	<h1 class="hero">Pricing</h1>
 
 	<div id="plans">
 		{#each data.products as product}
 			{@const price = product.items.find((item) => item.type === 'price')}
 			<article id={product.id}>
 				<h2>{product.name}</h2>
+				<span class="price">{Object.values(price?.display ?? {}).join(' ')}</span>
 
-				<dl>
-					{#if price}
-						<dt>Price</dt>
-						<dd>{Object.values(price?.display ?? {}).join(' ')}</dd>
-					{/if}
-
+				<dl class="features">
 					<dt>Features</dt>
 					<dd>
-						<ul>
+						<ul class="no-bullet">
 							{#each product.items as item}
 								{#if item.feature}
 									<li>
@@ -61,11 +57,11 @@
 				</dl>
 
 				{#if product.properties.is_free}
-					<button class="primary">Play for free</button>
+					<a href="" class="primary">Play for free</a>
 				{:else if product.is_add_on}
-					<button class="primary">Purchase</button>
+					<a href="" class="primary">Purchase</a>
 				{:else}
-					<button class="primary">Subscribe</button>
+					<a href="" class="primary">Subscribe</a>
 				{/if}
 			</article>
 		{/each}
@@ -96,15 +92,66 @@
 <style>
 	main {
 		width: 100%;
+		background-color: var(--pink);
 	}
 	#plans {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+		grid-template-rows: 1fr auto auto;
 		gap: 1rem;
 	}
 	article {
 		display: grid;
-		gap: 0.25rem;
+		grid-template-columns: 1fr auto;
+		grid-template-rows: subgrid;
+		grid-row: span 3;
+		align-items: first baseline;
+		background-color: color-mix(in oklab, var(--pink) 80%, #fff);
+
+		padding: 1.5rem 2rem;
+		border-radius: 1rem;
+		gap: 0.5rem;
+
+		& > * {
+			margin: 0;
+		}
+
+		h2 {
+			font-weight: 700;
+			letter-spacing: -0.0125em;
+			font-size: 2rem;
+		}
+
+		.price {
+			font-size: 1.5rem;
+			font-weight: 700;
+			letter-spacing: -0.0125em;
+			justify-self: end;
+		}
+
+		.features {
+			grid-column: 1 / -1;
+			display: grid;
+			gap: 0.5rem;
+
+			dt {
+				font-weight: 700;
+			}
+			dd,
+			ul {
+				margin-left: 0;
+				display: contents;
+			}
+		}
+
+		a {
+			justify-self: end;
+			grid-column: 2;
+		}
+
+		&#pay_as_you_go {
+			grid-column: 1 / -1;
+		}
 	}
 	#referral {
 		text-align: center;

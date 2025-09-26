@@ -16,6 +16,7 @@ label,
 	/* line-height: 1.25rem; */
 	word-wrap: break-word;
 	color: inherit;
+	opacity: 0.3;
 
 	&:has(input, select, textarea) {
 		display: grid;
@@ -41,8 +42,8 @@ input[type='datetime-local'],
 input::file-selector-button,
 select,
 textarea {
-	height: 2.5rem;
-	padding: 0px 0.75rem;
+	height: 4rem;
+	padding: 0 1.5rem;
 	align-items: center;
 	gap: 0.5rem;
 	align-self: stretch;
@@ -56,7 +57,7 @@ textarea {
 	font-style: normal;
 	line-height: 1.25rem; /* 142.857% */
 
-	border-radius: 0;
+	border-radius: 2rem;
 	border: 1.5px solid var(--grey-200);
 	color: inherit;
 
@@ -89,10 +90,12 @@ textarea {
 
 textarea {
 	height: unset;
-	min-height: 2.5rem;
+	min-height: 4rem;
 	max-height: 80dvh;
 	width: 100%;
-	padding: 0.5rem 0.75rem;
+	padding: 1rem 1.5rem;
+	border-radius: 1rem;
+	font-size: 1.25rem;
 	resize: vertical;
 	font-family: inherit;
 	field-sizing: content;

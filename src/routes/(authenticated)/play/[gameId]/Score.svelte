@@ -27,8 +27,6 @@
 </script>
 
 <div id="score" class:hidden={!round.score}>
-	<h3>Round #{game.rounds.length}</h3>
-
 	<div id="calc">
 		(<output
 			aria-labelledby="Base points for correct answer"
@@ -62,10 +60,6 @@
 		justify-content: space-between;
 		font-size: 1.5em;
 		gap: 1rem;
-
-		h3 {
-			margin: 0;
-		}
 
 		&.hidden {
 			visibility: hidden;

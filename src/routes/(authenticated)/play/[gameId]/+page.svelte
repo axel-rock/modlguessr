@@ -18,6 +18,7 @@
 	import { Tween } from 'svelte/motion'
 	import Timer from './Timer.svelte'
 	import { MAX_ROUNDS } from '$lib/constants'
+	import paperplane from '$lib/assets/paperplane.svg?raw'
 
 	// let { data }: PageProps = $props()
 
@@ -153,22 +154,22 @@
 						(round?.messages?.length ?? 0) < 2}
 				>
 					<img src="/logo/{provider}.svg" alt={provider} />
-					<span class="name">{name}</span>
 					<span class="provider">{provider}</span>
+					<span class="name">{name}</span>
 				</button>
 			{/each}
 		</menu>
 
 		{#if game && round && round.score}
+			<Score {game} {round} />
 			{#if game.ended_at}
 				<div id="end-game">
 					<a href="/leaderboard" role="button" class="primary">Leaderboard</a>
 					<a href="/play" role="button" class="primary">Play again</a>
 				</div>
 			{:else}
-				<Score {game} {round} />
 				<button
-					class="primary"
+					class="contrast"
 					onclick={async () => {
 						await convex.mutation(api.games.nextRound, {
 							gameId: page.params.gameId as Id<'games'>,
@@ -193,9 +194,7 @@
 					}}
 					bind:value={input}
 				></textarea>
-				<button type="submit" class="primary" disabled={chat.status !== 'ready'}
-					>Send / {chat.status}</button
-				>
+				<button id="send" type="submit" disabled={chat.status !== 'ready' || !input}>Send</button>
 			</form>
 		{/if}
 	</div>
@@ -221,6 +220,7 @@
 				display: flex;
 				flex-flow: row nowrap;
 				font-size: inherit;
+				opacity: 1;
 
 				output {
 					padding: 0.25rem 0.5rem;
@@ -281,7 +281,7 @@
 
 			&[href='/leaderboard'] {
 				/* Leaderboard yellow */
-				background-color: #ffd600;
+				background-color: var(--yellow);
 				color: #000;
 			}
 		}
@@ -298,10 +298,9 @@
 
 		button {
 			display: grid;
-			grid-template-columns: 2rem 1fr;
-
+			grid-template-columns: 2rem auto 1fr;
+			font-size: 1.05em;
 			text-align: start;
-			justify-content: start;
 			gap: 0.25rem 0.5rem;
 			padding: 0.5rem 1rem;
 			border-radius: 3rem;
@@ -320,9 +319,9 @@
 			}
 
 			img {
+				height: 2rem;
 				aspect-ratio: 1;
-				object-fit: contain;
-				grid-row: span 2;
+				justify-self: center;
 			}
 
 			.name,
@@ -332,8 +331,7 @@
 				text-overflow: ellipsis;
 			}
 
-			.provider {
-				font-size: 0.75rem;
+			.name {
 				opacity: 0.5;
 			}
 		}
@@ -345,18 +343,36 @@
 		}
 	}
 
-	@media (min-width: 768px) {
-		menu#vote {
-			grid-template-columns: repeat(4, 1fr); /* desktop: 4 columns */
-		}
-	}
-
 	form#message {
 		display: grid;
-		grid-template-columns: 1fr auto auto;
 		align-items: end;
 		box-sizing: border-box;
 		justify-self: stretch;
+		position: relative;
 		/* margin-inline: -2rem; */
+
+		textarea {
+			padding: 1rem 4rem 1rem 1.5rem;
+		}
+
+		#send {
+			all: unset;
+			position: absolute;
+			right: 1rem;
+			bottom: 1rem;
+			font-size: 1rem;
+			padding: 0;
+			margin: 0;
+			border: none;
+			background-color: transparent;
+			color: var(--grey-700);
+			cursor: pointer;
+			&:hover {
+				color: var(--grey-900);
+			}
+			&:active {
+				color: var(--grey-700);
+			}
+		}
 	}
 </style>

@@ -12,6 +12,7 @@ import type * as auth from "../auth.js";
 import type * as autumn from "../autumn.js";
 import type * as games from "../games.js";
 import type * as http from "../http.js";
+import type * as openai from "../openai.js";
 import type * as stats from "../stats.js";
 import type * as tickets from "../tickets.js";
 
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   autumn: typeof autumn;
   games: typeof games;
   http: typeof http;
+  openai: typeof openai;
   stats: typeof stats;
   tickets: typeof tickets;
 }>;

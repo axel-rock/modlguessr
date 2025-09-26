@@ -6,6 +6,7 @@
 
 	font-size: 1rem;
 	font-weight: 400;
+	font-family: inherit;
 	letter-spacing: -0.02em;
 
 	appearance: none;
@@ -21,9 +22,10 @@
 	outline-color: color-mix(in oklab, var(--brand) 90%, transparent);
 
 	&:not(label, .label) {
-		min-height: 2.5rem;
-		padding-inline: 1rem;
-		border-radius: 0;
+		min-height: 4rem;
+		font-size: 1.5rem;
+		padding-inline: 1.5rem;
+		border-radius: 2rem;
 		overflow: hidden;
 	}
 

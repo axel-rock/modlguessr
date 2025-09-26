@@ -4,6 +4,11 @@
 	import { authClient } from '$lib/auth'
 	import { Debounced } from 'runed'
 	import { page } from '$app/state'
+	import { goto } from '$app/navigation'
+	import { generateObject } from 'ai'
+	import z from 'zod'
+	import { useConvexClient } from 'convex-svelte'
+	import { api } from '$convex/api'
 
 	// let { data }: PageProps = $props()
 
@@ -12,10 +17,14 @@
 	let username = $state(context.user?.displayUsername || '')
 	let isAvailable = $state(false)
 	let isCurrent = $derived(user?.displayUsername === username)
+	const convex = useConvexClient()
+
+	let suggestions: string[] | undefined = $state(undefined)
 
 	const checkAvailability = new Debounced(async () => {
 		if (!username) return undefined
 		if (username.length < 3) return undefined
+		// if (suggestions?.includes(username)) return { available: true }
 		const { data, error } = await authClient.isUsernameAvailable({
 			username,
 		})
@@ -40,10 +49,49 @@
 			})
 		}
 	})
+
+	const status = $derived.by(() => {
+		if (!username || isCurrent) return undefined
+		if (checkAvailability.pending) return 'checking…'
+		if (isAvailable) return 'available'
+		return 'unavailable'
+	})
+
+	/* Username is mandatory. User can be pointed to this page during sign up process, but flow will resume where they left off */
+	$effect(() => {
+		if (page.url.searchParams.has('redirect') && user?.username)
+			goto(page.url.searchParams.get('redirect')!)
+	})
+
+	$effect(() => {
+		if (user && !user.username) {
+			getSuggestions()
+		}
+	})
+
+	async function getSuggestions() {
+		const gen = await convex.action(api.openai.getUsernameSuggestions, {})
+		if (!gen) return
+
+		const availabilities = await Promise.all(
+			gen.map(async (suggestion) => {
+				const { data, error } = await authClient.isUsernameAvailable({ username: suggestion })
+				return {
+					suggestion,
+					available: data?.available,
+				}
+			})
+		)
+
+		suggestions = availabilities
+			.filter((availability) => availability.available)
+			.map((availability) => availability.suggestion)
+			.slice(0, 3)
+	}
 </script>
 
 <main>
-	<h1>Settings</h1>
+	<h1 class="hero">How should we call you?</h1>
 
 	{#if user}
 		<h2>{user?.displayUsername}</h2>
@@ -51,7 +99,7 @@
 
 	<form onsubmit={updateUsername}>
 		<div class="form-group">
-			<label for="username">Username</label>
+			<label for="username">Username, displayed on the leaderboard</label>
 			<input
 				type="text"
 				name="username"
@@ -66,35 +114,75 @@
 				pattern="^[a-zA-Z0-9_-]+$"
 				required
 			/>
-			{#if username && !isCurrent}
-				{#if checkAvailability.pending}
-					<span>Checking...</span>
-				{:else}
-					{#await checkAvailability.current}
-						<span>Checking...</span>
-					{:then check}
-						{#if check?.available}
-							<span>Available</span>
-						{:else}
-							<span>Unavailable</span>
-						{/if}
-					{/await}
-				{/if}
-			{/if}
 		</div>
+
 		{#if !isCurrent}
+			{@const text = !username
+				? 'Update'
+				: checkAvailability.pending
+					? 'Checking...'
+					: isAvailable
+						? 'Update'
+						: 'Unavailable'}
 			<button
 				type="submit"
-				class="primary"
-				disabled={!isAvailable || user?.displayUsername === username}>Update</button
+				class="contrast"
+				disabled={!isAvailable || user?.displayUsername === username}>{text}</button
 			>
 		{/if}
 	</form>
+
+	{#if suggestions}
+		<hr />
+
+		<p id="suggestions-label">OpenAI had some ideas (take 'em or leave 'em):</p>
+
+		<menu id="suggestions">
+			{#each suggestions as suggestion}
+				<li>
+					<button class="suggestion tertiary" onclick={() => (username = suggestion)}>
+						{suggestion}
+					</button>
+				</li>
+			{/each}
+		</menu>
+	{/if}
 </main>
 
 <style>
 	main {
 		width: min(var(--narrow-page), 100%);
 		justify-self: center;
+		place-items: center;
+
+		form {
+			justify-content: center;
+			align-items: end;
+			width: 100%;
+			display: grid;
+			grid-template-columns: 1fr auto;
+
+			#username {
+				font-size: 1.5rem;
+			}
+		}
+	}
+
+	#suggestions-label {
+		display: block;
+		width: 100%;
+		text-align: center;
+	}
+
+	menu {
+		display: grid;
+		width: 100%;
+		grid-template-columns: repeat(auto-fit, minmax(8ch, 1fr));
+		gap: 1rem;
+		justify-content: center;
+
+		li {
+			display: contents;
+		}
 	}
 </style>
