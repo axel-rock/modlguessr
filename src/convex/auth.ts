@@ -8,8 +8,8 @@ import { username } from 'better-auth/plugins'
 import { generateObject } from 'ai'
 import z from 'zod'
 
-const PUBLIC_GOOGLE_CLIENT_ID = process.env.PUBLIC_GOOGLE_CLIENT_ID as string
-const PRIVATE_GOOGLE_CLIENT_SECRET = process.env.PRIVATE_GOOGLE_CLIENT_SECRET as string
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string
 const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL as string
 
 // Typesafe way to pass Convex functions defined in this file
@@ -23,8 +23,8 @@ export const createAuth = (ctx: GenericCtx<DataModel>) =>
 		database: authComponent.adapter(ctx),
 		socialProviders: {
 			google: {
-				clientId: PUBLIC_GOOGLE_CLIENT_ID,
-				clientSecret: PRIVATE_GOOGLE_CLIENT_SECRET,
+				clientId: GOOGLE_CLIENT_ID,
+				clientSecret: GOOGLE_CLIENT_SECRET,
 			},
 		},
 		plugins: [

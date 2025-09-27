@@ -84,7 +84,7 @@ As the main goal is to explore the stack, here are some features we can implemen
 - [ ] CD Pipeline
   - [x] Deploy on Vercel
   - [ ] Auth is working
-  - [ ] Convex prod is used
+  - [x] Convex prod is used
   - [ ] Autumn prod is used
 - [x] Create a blog to document learnings
 - [ ] Gameplay with AI SDK
@@ -95,12 +95,12 @@ As the main goal is to explore the stack, here are some features we can implemen
   - [x] Move to next round
   - [x] Save final game score
   - [x] Enter data in leaderboard
-  - [ ] Suggest next-game
-  - [ ] Different difficulty level
+  - [x] Suggest next-game
+  - [-] Different difficulty level
 - [x] Leaderboard
-- [ ] Analytics
+- [x] Analytics
 - [ ] Homepage
-- [ ] Referral program (Autumn + Resend)
+- [-] Referral program (Autumn + Resend)
 - [ ] Share
 - [ ] Multiplayer
 - [ ] i18n

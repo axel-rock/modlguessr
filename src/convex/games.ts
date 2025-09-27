@@ -6,7 +6,6 @@ import { game, message as messageSchema, score } from '$lib/zod/schema'
 import { TableAggregate } from '@convex-dev/aggregate'
 import {
 	convertToModelMessages,
-	// gateway,
 	generateObject,
 	streamText,
 	validateUIMessages,
@@ -21,14 +20,13 @@ import {
 	httpAction,
 	internalAction,
 	internalMutation,
+	internalQuery,
 	mutation,
 	query,
 } from './_generated/server'
-import { authComponent, createAuth } from './auth'
+import { authComponent } from './auth'
 import { autumn } from './autumn'
 import { tokenAggregate } from './stats'
-
-// const availableModels = await gateway.getAvailableModels();
 
 export const leaderboardAggregate = new TableAggregate<{
 	Namespace: string // difficulty only
@@ -146,6 +144,16 @@ export const get = query({
 	},
 })
 
+/**
+ * Get a game for admin purposes, which includes the model details (otherwise hidden to prevent cheating)
+ */
+export const _get = internalQuery({
+	args: {
+		gameId: v.id('games'),
+	},
+	handler: async (ctx, args) => ctx.db.get(args.gameId),
+})
+
 /** Temporary function to check the games in DB until we get leaderboard */
 export const list = query({
 	args: {
@@ -153,20 +161,6 @@ export const list = query({
 	},
 	handler: async (ctx, { limit = 50 }) => {
 		return ctx.db.query('games').take(limit)
-	},
-})
-
-/**
- * Get a game for admin purposes, which includes the model details (otherwise hidden to prevent cheating)
- */
-export const getWithModelDetails = query({
-	args: {
-		gameId: v.id('games'),
-		apiKey: v.optional(v.string()),
-	},
-	handler: async (ctx, args) => {
-		if (args.apiKey !== process.env.ADMIN_API_KEY) throw new Error('Invalid API key')
-		return ctx.db.get(args.gameId)
 	},
 })
 
@@ -178,9 +172,8 @@ export const pick = action({
 		model: v.string(),
 	},
 	handler: async (ctx, { gameId, roundIndex, model }) => {
-		const game = await ctx.runQuery(api.games.getWithModelDetails, {
+		const game = await ctx.runQuery(internal.games._get, {
 			gameId: gameId as Id<'games'>,
-			apiKey: process.env.ADMIN_API_KEY,
 		})
 		if (!game) throw new Error('Game not found')
 		if (!game.live) return undefined
@@ -297,9 +290,8 @@ export const stream = httpAction(async (ctx, request) => {
 	}
 
 	// Get the game and model info
-	const game = await ctx.runQuery(api.games.getWithModelDetails, {
+	const game = await ctx.runQuery(internal.games._get, {
 		gameId: gameId as Id<'games'>,
-		apiKey: process.env.ADMIN_API_KEY,
 	})
 	if (!game) throw new Error('Game not found')
 	if (game.ended_at) throw new Error('Game has ended')

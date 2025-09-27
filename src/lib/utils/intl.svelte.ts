@@ -15,3 +15,16 @@ export function formatDateAbsolute(date: Date | string | number) {
 		day: '2-digit',
 	}).format(date)
 }
+
+export const formatPrice = (
+	price: number,
+	currency: string = 'usd',
+	minimumFractionDigits = 2,
+	locale?: string
+) => {
+	return new Intl.NumberFormat(locale, {
+		style: 'currency',
+		currency,
+		minimumFractionDigits,
+	}).format(price)
+}
