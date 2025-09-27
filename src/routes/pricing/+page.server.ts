@@ -2,25 +2,15 @@ import type { PageServerLoad } from './$types'
 import { api } from '$convex/api'
 import { error } from '@sveltejs/kit'
 import type { Product } from 'autumn-js'
-import { PRIVATE_AUTUMN_SECRET_KEY } from '$env/static/private'
 
-export const prerender = true
+// export const prerender = true
 
-export const load = (async ({ locals: { convex }, fetch }) => {
-	const req = await fetch('https://api.useautumn.com/v1/products', {
-		headers: {
-			Authorization: `Bearer ${PRIVATE_AUTUMN_SECRET_KEY}`,
-		},
-	})
-
-	const data = await req.json()
-
-	const products: Product[] =
-		data?.list.sort(sortProducts).filter((product: Product) => product.id !== 'referral_bonus') ??
-		// .filter((product: Product) =>
-		// 	product.items.some((item) => item.feature?.name === 'tickets')
-		// )
-		[]
+export const load = (async ({ locals: { convex } }) => {
+	const { data } = await convex.action(api.autumn.listProducts, {})
+	if (!data) error(500, 'Failed to list products')
+	const products = data.list
+		.sort(sortProducts)
+		.filter((product: Product) => product.id !== 'referral_bonus')
 
 	return {
 		products,
