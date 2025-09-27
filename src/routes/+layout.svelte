@@ -1,5 +1,5 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg'
+	import favicon from '$lib/assets/modlguessr.svg'
 	import play from '$lib/assets/play.svg?raw'
 	import { createSvelteAuthClient } from '@mmailaender/convex-better-auth-svelte/svelte'
 	import { authClient } from '$lib/auth'
@@ -10,11 +10,14 @@
 	import { context } from '$lib/context.svelte'
 	import { page } from '$app/state'
 	import Footer from '../lib/components/Footer.svelte'
+	import { useSearchParams } from 'runed/kit'
+	import z from 'zod'
 	// import Toast from '$lib/components/Toast.svelte'
 
 	let { data, children } = $props()
 	createSvelteAuthClient({ authClient })
 	const convex = useConvexClient()
+	const params = useSearchParams(z.object({ message: z.string().optional() }))
 
 	let userQuery = useQuery(api.auth.getCurrentUser, {})
 	let user = $derived(userQuery.data)
@@ -41,8 +44,16 @@
 </script>
 
 <svelte:head>
+	<title>ModlGuessr</title>
 	<link rel="icon" href={favicon} />
 </svelte:head>
+
+{#if page.url.searchParams.has('message')}
+	<div id="message">
+		<span>{page.url.searchParams.get('message')}</span>
+		<button onclick={() => params.reset()}>Close</button>
+	</div>
+{/if}
 
 <header>
 	<nav>
@@ -105,6 +116,21 @@
 <!-- <Toast /> -->
 
 <style>
+	#message {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0.5rem 2rem;
+		background-color: var(--grey-900);
+		color: var(--grey-0);
+
+		button {
+			color: var(--grey-0);
+		}
+	}
+
 	header {
 		display: grid;
 		grid-template-columns: 1fr auto 1fr;

@@ -1,12 +1,10 @@
 import { createClient, type AuthFunctions, type GenericCtx } from '@convex-dev/better-auth'
 import { convex } from '@convex-dev/better-auth/plugins'
 import { components, internal } from './_generated/api.js'
-import { action, query } from './_generated/server.js'
+import { query } from './_generated/server.js'
 import type { DataModel } from './_generated/dataModel.js'
 import { betterAuth } from 'better-auth'
 import { username } from 'better-auth/plugins'
-import { generateObject } from 'ai'
-import z from 'zod'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string
@@ -15,7 +13,9 @@ const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL as string
 // Typesafe way to pass Convex functions defined in this file
 const authFunctions: AuthFunctions = internal.auth
 
-export const authComponent = createClient<DataModel>(components.betterAuth, { authFunctions })
+export const authComponent = createClient<DataModel>(components.betterAuth, {
+	authFunctions,
+})
 
 export const createAuth = (ctx: GenericCtx<DataModel>) =>
 	betterAuth({

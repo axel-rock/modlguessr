@@ -69,6 +69,18 @@
 		}
 	})
 
+	const text = $derived(
+		isCurrent
+			? 'Great name!'
+			: !username
+				? 'Update'
+				: checkAvailability.pending
+					? 'Checking...'
+					: isAvailable
+						? 'Update'
+						: 'Unavailable'
+	)
+
 	async function getSuggestions() {
 		const gen = await convex.action(api.openai.getUsernameSuggestions, {})
 		if (!gen) return
@@ -93,10 +105,6 @@
 <main>
 	<h1 class="hero">How should we call you?</h1>
 
-	{#if user}
-		<h2>{user?.displayUsername}</h2>
-	{/if}
-
 	<form onsubmit={updateUsername}>
 		<div class="form-group">
 			<label for="username">Username, displayed on the leaderboard</label>
@@ -116,20 +124,11 @@
 			/>
 		</div>
 
-		{#if !isCurrent}
-			{@const text = !username
-				? 'Update'
-				: checkAvailability.pending
-					? 'Checking...'
-					: isAvailable
-						? 'Update'
-						: 'Unavailable'}
-			<button
-				type="submit"
-				class="contrast"
-				disabled={!isAvailable || user?.displayUsername === username}>{text}</button
-			>
-		{/if}
+		<button
+			type="submit"
+			class="contrast big"
+			disabled={isCurrent || !isAvailable || user?.displayUsername === username}>{text}</button
+		>
 	</form>
 
 	{#if suggestions}

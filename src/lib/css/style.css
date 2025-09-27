@@ -96,3 +96,32 @@ article[role='document'] {
 	width: 100%;
 	height: 100%;
 }
+
+img[src$='amazon.svg'],
+img[src$='google.svg'],
+img[src$='meta.svg'],
+img[src$='mistral.svg'],
+img[src$='moonshotai.svg'],
+img[src$='morph.svg'],
+img[src$='vercel.svg'],
+img[src$='voyage.svg'],
+img[src$='zai.svg'] {
+	object-fit: contain;
+	padding: 20%;
+	aspect-ratio: 1;
+	background-color: #fff;
+}
+
+img[src$='alibaba.svg'],
+img[src$='cohere.svg'] {
+	object-fit: contain;
+	padding: 10%;
+	aspect-ratio: 1;
+}
+
+img[src$='vercel.svg'] {
+	background-color: unset;
+	@media (prefers-color-scheme: dark) {
+		filter: invert(1);
+	}
+}

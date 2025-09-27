@@ -47,6 +47,8 @@ As the main goal is to explore the stack, here are some features we can implemen
 
 ### Convex
 
+- Entire game logic
+- Run the LLMs with streaming
 - Real time leaderboard
 - Real time display of total games / messages / tokens ever used, all users combined, with an aggregate
 - See other players games
@@ -55,6 +57,7 @@ As the main goal is to explore the stack, here are some features we can implemen
 ### Better Auth
 
 - Basic login
+- Unique usernames
 - Show last login method
 - Admin system (maybe see moderation)
 
@@ -69,6 +72,11 @@ As the main goal is to explore the stack, here are some features we can implemen
 - Send email for the referal program
 - Email confirmation
 
+### OpenAI
+
+- Generate usernames
+- Analyse games (check if the user managed to force the model to reveal its identity)
+
 ## Roadmap
 
 - [x] Setup SvelteKit
@@ -77,15 +85,15 @@ As the main goal is to explore the stack, here are some features we can implemen
   - [x] Google Auth
   - [x] Username plugin
   - [ ] Find out and implement other relevant providers
-- [-] Setup Autumn
+- [x] Setup Autumn
   - [x] Define plans
   - [x] Show and track feature (tickets to play a game)
   - [x] Implement and test payment
-- [ ] CD Pipeline
+- [x] CD Pipeline
   - [x] Deploy on Vercel
-  - [ ] Auth is working
+  - [x] Auth is working
   - [x] Convex prod is used
-  - [ ] Autumn prod is used
+  - [x] Autumn prod is used
 - [x] Create a blog to document learnings
 - [ ] Gameplay with AI SDK
   - [x] Find fun game loops
@@ -96,14 +104,16 @@ As the main goal is to explore the stack, here are some features we can implemen
   - [x] Save final game score
   - [x] Enter data in leaderboard
   - [x] Suggest next-game
-  - [-] Different difficulty level
+  - [ ] Different difficulty level
 - [x] Leaderboard
 - [x] Analytics
 - [ ] Homepage
-- [-] Referral program (Autumn + Resend)
+- [x] Referral program (Autumn + Resend)
 - [ ] Share
 - [ ] Multiplayer
 - [ ] i18n
+
+---
 
 ## License
 

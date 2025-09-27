@@ -3,6 +3,7 @@
 		<div class="tools">
 			<a href="/about">About</a>
 			<a href="/blog">Devblog</a>
+			<a href="/models">Models</a>
 			<span>Source code:</span>
 			<a href="https://github.com/axel-rock/modlguessr" target="_blank">
 				<img src="/logo/github.svg" alt="GitHub" />
@@ -26,6 +27,14 @@
 			<a href="https://useautumn.com/" target="_blank">
 				<img src="/logo/autumn.png" alt="Autumn" />
 				<span>Autumn</span></a
+			>
+			<a href="https://resend.com/" target="_blank">
+				<img src="/logo/resend.svg" alt="Resend" />
+				<span>Resend</span></a
+			>
+			<a href="https://openai.com/" target="_blank">
+				<img src="/logo/openai.svg" alt="OpenAI" />
+				<span>OpenAI</span></a
 			>
 			<a href="https://vercel.com/" target="_blank">
 				<img src="/logo/vercel.svg" alt="Vercel" />
@@ -76,16 +85,19 @@
 				justify-self: center;
 			}
 
-			&[href*='vercel'] img {
-				scale: 0.66;
-			}
-
 			&[href*='github'] img {
 				scale: 0.8;
 			}
 
 			@media (prefers-color-scheme: dark) {
-				&:is([href*='vercel'], [href*='better-auth'], [href*='github']) img {
+				&:is(
+						[href*='vercel'],
+						[href*='better-auth'],
+						[href*='github'],
+						[href*='openai'],
+						[href*='resend']
+					)
+					img {
 					filter: invert(1);
 				}
 			}
