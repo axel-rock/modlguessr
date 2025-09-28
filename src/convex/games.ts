@@ -309,6 +309,9 @@ export const stream = httpAction(async (ctx, request) => {
 
 	const system = buildPrompt(game.difficulty, round.prompt ?? '', user)
 
+	console.log('system', system)
+	console.log('model', round.model)
+
 	const result = streamText({
 		model: round.model,
 		system,
