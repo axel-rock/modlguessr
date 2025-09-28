@@ -26,6 +26,10 @@
 				<img src="/logo/openai.svg" alt="OpenAI" />
 				<span>OpenAI</span></a
 			>
+			<a href="https://vapi.ai/" target="_blank">
+				<img src="/logo/vapi.svg" alt="Vapi" />
+				<span>Vapi</span></a
+			>
 			<a href="https://vercel.com/" target="_blank">
 				<img src="/logo/vercel.svg" alt="Vercel" />
 				<span>Vercel AI</span></a

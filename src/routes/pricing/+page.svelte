@@ -6,6 +6,7 @@
 	import { context } from '$lib/context.svelte'
 	import { type CustomerProduct, type Feature } from 'autumn-js'
 	import { goto } from '$app/navigation'
+	import Vapi from './Vapi.svelte'
 
 	let { data }: PageProps = $props()
 
@@ -107,6 +108,8 @@
 			</article>
 		{/each}
 	</div>
+
+	<Vapi />
 
 	<div id="referral" class="span-all">
 		<h2>Invite friends, earn free tickets!</h2>
@@ -250,5 +253,10 @@
 			border: none;
 			cursor: pointer;
 		}
+	}
+
+	.contrast {
+		background-color: var(--grey-900);
+		color: var(--grey-0) !important;
 	}
 </style>

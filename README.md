@@ -80,6 +80,8 @@ As the main goal is to explore the stack, here are some features we can implemen
   - [x] Generate referral code
   - [x] Redeem codes
   - [x] Notify referer by email when a code is used
+- [x] Vapi
+  - [x] Put a button to call a sales person from pricing page
 - [ ] Share
   - [ ] Nice OG images
 - [ ] Multiplayer
