@@ -139,7 +139,7 @@
 		<menu id="suggestions">
 			{#each suggestions as suggestion}
 				<li>
-					<button class="suggestion tertiary" onclick={() => (username = suggestion)}>
+					<button class="suggestion tertiary big" onclick={() => (username = suggestion)}>
 						{suggestion}
 					</button>
 				</li>
