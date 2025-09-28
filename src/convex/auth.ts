@@ -20,6 +20,7 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
 export const createAuth = (ctx: GenericCtx<DataModel>) =>
 	betterAuth({
 		baseURL: BETTER_AUTH_URL,
+		trustedOrigins: [BETTER_AUTH_URL.replace('https://', 'https://*.')],
 		database: authComponent.adapter(ctx),
 		socialProviders: {
 			google: {

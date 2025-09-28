@@ -5,8 +5,6 @@
 	import { Debounced } from 'runed'
 	import { page } from '$app/state'
 	import { goto } from '$app/navigation'
-	import { generateObject } from 'ai'
-	import z from 'zod'
 	import { useConvexClient } from 'convex-svelte'
 	import { api } from '$convex/api'
 
