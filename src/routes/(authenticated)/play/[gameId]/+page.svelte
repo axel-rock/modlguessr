@@ -136,7 +136,7 @@
 <main id="chat">
 	{#if messages.length === 0 && chat.status === 'ready'}
 		<h1 class="hero" out:fly={{ y: -50, duration: 200, easing: sineOut }}>
-			Ask me anything to guess who I am!
+			{round?.description}
 		</h1>
 	{:else}
 		<ul id="messages" in:fly={{ y: 50, duration: 200, delay: 200, easing: sineIn }}>
@@ -266,7 +266,8 @@
 
 			output {
 				padding: 0.25rem 0.5rem;
-				background-color: var(--grey-200);
+				background-color: var(--grey-900);
+				color: var(--grey-0);
 				border-radius: 2rem;
 				position: relative;
 				box-sizing: initial;

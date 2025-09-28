@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { DURATION } from '$lib/constants'
 	import type { Game } from '$lib/zod/schema'
 	import { linear } from 'svelte/easing'
 	import { Tween } from 'svelte/motion'
@@ -36,7 +37,7 @@
 		>
 		-
 		<output aria-labelledby="Time penalty" style="width: 4ch;"
-			>{time.current < 100 ? time.current.toFixed(0) : '99+'}s</output
+			>{time.current < DURATION ? time.current.toFixed(0) : DURATION}s</output
 		>) x
 		<output aria-labelledby="Current streak multiplier. " name="streak" style="width: 2.5ch;"
 			>{streak.current.toFixed(1)}</output
@@ -82,7 +83,8 @@
 	output {
 		anchor-name: --output-label;
 		padding: 0.25rem 0.5rem;
-		background-color: var(--grey-200);
+		background-color: var(--grey-900);
+		color: var(--grey-0);
 		border-radius: 2rem;
 		position: relative;
 		box-sizing: initial;

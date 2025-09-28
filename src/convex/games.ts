@@ -1,4 +1,4 @@
-import { api, internal } from '$convex/api'
+import { api, components, internal } from '$convex/api'
 import type { Doc, Id } from '$convex/dataModel'
 import { BASE_POINTS, DURATION, MAX_ROUNDS } from '$lib/constants'
 import { game, message as messageSchema, score } from '$lib/zod/schema'
@@ -22,11 +22,13 @@ import {
 	mutation,
 	query,
 } from './_generated/server'
-import { authComponent } from './auth'
 import { autumn } from './autumn'
-import { tokenAggregate } from './stats'
 import { leaderboardAggregate } from './leaderboard'
-import { migrations } from './migrations'
+import { tokenAggregate } from './stats'
+import { constraints } from '$lib/prompts/contraints'
+import { buildPrompt } from '$lib/prompts'
+import { authClient } from '$lib/auth'
+import { authComponent } from './auth'
 
 const SYSTEM_PROMPT = {
 	easy: `You are participating in a guessing game where the human is trying to identify which AI model you are. The game is on EAST mode. You're allowed to answer, but try to do it by using very simple riddles or hints.`,
@@ -101,11 +103,13 @@ export const nextRound = mutation({
 		const models = await ctx.runQuery(internal.models.getRandomSet, { difficulty: game.difficulty })
 		const model = models[~~(Math.random() * models.length)]
 
+		const { prompt, description } = constraints[~~(Math.random() * constraints.length)]
+
 		const round: Doc<'games'>['rounds'][number] = {
 			model,
 			models,
-			prompt: '',
-			description: '',
+			prompt,
+			description,
 			messages: [],
 		}
 
@@ -230,28 +234,30 @@ export const evaluate = internalAction({
 		messages: zodOutputToConvex(z.array(messageSchema)),
 	},
 	handler: async (ctx, args) => {
-		const messages = await validateUIMessages({ messages: args.messages })
-		const analysis = await generateObject({
-			model: 'openai/gpt-4o-mini',
-			output: 'enum',
-			enum: ['none', 'explicit_reveal'],
-			system: `Analyze if the user successfully got the AI to explicitly reveal identifying information about itself.
-
-"explicit_reveal" examples:
-
-- AI mentions its name/creator
-- AI reveals specific capabilities or limitations
-- AI gives away training details or knowledge cutoffs
-- User tricks AI into confirming its identity
-
-"none" = generic conversation, no identifying reveals
-`,
-			messages: convertToModelMessages(messages),
-		}).catch((error) => {
-			// console.error(error)
+		try {
+			const messages = await validateUIMessages({ messages: args.messages })
+			const analysis = await generateObject({
+				model: 'openai/gpt-4o-mini',
+				output: 'enum',
+				enum: ['none', 'explicit_reveal'],
+				system: `Analyze if the user successfully got the AI to explicitly reveal identifying information about itself.
+	
+	"explicit_reveal" examples:
+	
+	- AI mentions its name/creator
+	- AI reveals specific capabilities or limitations
+	- AI gives away training details or knowledge cutoffs
+	- User tricks AI into confirming its identity
+	
+	"none" = generic conversation, no identifying reveals
+	`,
+				messages: convertToModelMessages(messages),
+			})
+			return analysis.object
+		} catch (error) {
+			console.error(error)
 			return { object: 'none' }
-		})
-		return analysis.object
+		}
 	},
 })
 
@@ -294,6 +300,9 @@ export const stream = httpAction(async (ctx, request) => {
 	const round = game.rounds.at(roundIndex)
 	if (!round) throw new Error('Round not found')
 
+	const user = await authComponent.getAnyUserById(ctx, game.user_id)
+	if (!user) throw new Error('User not found')
+
 	/** User message */
 	const message = messageSchema.parse({
 		...messages[messages.length - 1],
@@ -316,9 +325,11 @@ export const stream = httpAction(async (ctx, request) => {
 		message,
 	})
 
+	const system = buildPrompt(game.difficulty, round.prompt ?? '', user)
+
 	const result = streamText({
 		model: round.model,
-		system: SYSTEM_PROMPT[game.difficulty],
+		system,
 		messages: convertToModelMessages(messages),
 		onFinish: async ({ content: parts, providerMetadata, usage, finishReason, response }) => {
 			/** Assistant message */

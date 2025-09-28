@@ -20,7 +20,7 @@ const ReasoningUIPartSchema = z.object({
 export const message = z.object({
 	id: z.string(),
 	role: z.enum(['assistant', 'system', 'user']),
-	parts: z.array(z.union([ReasoningUIPartSchema, TextUIPartSchema])),
+	parts: z.array(z.union([ReasoningUIPartSchema, TextUIPartSchema, z.any()])),
 	metadata: z.optional(z.record(z.string(), z.unknown())),
 	timestamp: z.number(),
 }) satisfies z.ZodType<UIMessage>
