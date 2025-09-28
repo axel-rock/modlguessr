@@ -91,6 +91,37 @@
 
 	const messages = $derived(chat.messages)
 
+	// Track last message for scrolling
+	let lastMessageContent = $state('')
+	let lastMessageElement: HTMLLIElement | undefined = $state()
+	let tempElement: HTMLLIElement | undefined = $state()
+
+	// Update lastMessageElement when tempElement changes
+	$effect(() => {
+		if (tempElement) {
+			lastMessageElement = tempElement
+		}
+	})
+
+	// Continuously scroll last message to top on every stream event
+	$effect(() => {
+		$inspect.trace('Streaming scroll effect triggered')
+
+		const lastMessage = messages.at(-1)
+		const currentLastMessageContent = lastMessage?.parts?.[0]?.text || ''
+
+		// Only scroll if we have a last message and it's an assistant message
+		if (lastMessageElement && lastMessage?.role === 'assistant') {
+			lastMessageElement.scrollIntoView({
+				behavior: 'smooth',
+				block: 'start',
+			})
+		}
+
+		// Update tracking
+		lastMessageContent = currentLastMessageContent
+	})
+
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault()
 
@@ -140,8 +171,8 @@
 		</h1>
 	{:else}
 		<ul id="messages" in:fly={{ y: 50, duration: 200, delay: 200, easing: sineIn }}>
-			{#each messages as message}
-				<li class="message {message.role}">
+			{#each messages as message, index (index)}
+				<li class="message {message.role}" bind:this={tempElement}>
 					{#each message.parts as part, partIndex (partIndex)}
 						{#if part.type === 'text' && part.text}
 							<div>{@html marked(part.text)}</div>
