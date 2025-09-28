@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { DURATION } from '$lib/constants'
 	import type { Game } from '$lib/zod/schema'
 
 	type Props = {
@@ -20,9 +21,9 @@
 {#if !round?.started_at}
 	<span>Ready</span>
 {:else if round.ended_at}
-	{@const duration = (round.ended_at - round.started_at) / 1000}
-	<span>{duration.toFixed(1)}s</span>
+	{@const timeLeft = Math.max(0, (round.started_at + DURATION * 1000 - round.ended_at) / 1000)}
+	<span>{timeLeft.toFixed(1)}s</span>
 {:else}
-	{@const duration = (now - round.started_at) / 1000}
-	<span>{duration.toFixed(1)}s</span>
+	{@const timeLeft = Math.max(0, (round.started_at + DURATION * 1000 - now) / 1000)}
+	<span>{timeLeft.toFixed(1)}s</span>
 {/if}

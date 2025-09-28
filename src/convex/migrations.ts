@@ -4,22 +4,41 @@ import { Migrations } from '@convex-dev/migrations'
 
 export const migrations = new Migrations<DataModel>(components.migrations)
 
-export const setDefaultValues = migrations.define({
+export const updateScores = migrations.define({
 	table: 'games',
 	migrateOne: async (ctx, doc) => {
 		console.log('Migrating game', doc._id)
-		if (doc.rounds.some((round) => !round.prompt || !round.description)) {
-			const rounds = doc.rounds.map((round) => {
-				return {
-					...round,
-					prompt: round.prompt ?? '',
-					description: round.description ?? 'Ask me anything to guess who I am!',
+		let needsUpdate = false
+		const rounds = doc.rounds.map((round) => {
+			const updatedRound = { ...round }
+
+			// Set default values for prompt and description
+			if (!round.prompt || !round.description) {
+				updatedRound.prompt = round.prompt ?? ''
+				updatedRound.description = round.description ?? 'Ask me anything to guess who I am!'
+				needsUpdate = true
+			}
+
+			// Migrate score schema from old format to new format
+			if (round.score && 'base' in round.score && 'time' in round.score) {
+				const oldScore = round.score as any
+				updatedRound.score = {
+					timeLeft: oldScore.time,
+					streak: oldScore.streak,
+					revealed: oldScore.revealed,
+					total: oldScore.total,
 				}
-			})
-			console.log('Setting default values for rounds', rounds)
+				needsUpdate = true
+			}
+
+			return updatedRound
+		})
+
+		if (needsUpdate) {
+			console.log('Migrating rounds with new schema', rounds)
 			await ctx.db.patch(doc._id, { rounds })
 		}
 	},
 })
 
-export const runIt = migrations.runner(internal.migrations.setDefaultValues)
+export const runUpdateScores = migrations.runner(internal.migrations.updateScores)

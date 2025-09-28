@@ -187,4 +187,8 @@
 			text-align: end;
 		}
 	}
+	hr {
+		background-color: var(--grey-900);
+		height: 2px;
+	}
 </style>

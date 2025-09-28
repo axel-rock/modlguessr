@@ -12,15 +12,13 @@
 	let { game, round }: Props = $props()
 
 	const duration = 1000
-	const base = new Tween(0, { duration, easing: linear })
-	const time = new Tween(0, { duration, easing: linear, delay: duration })
-	const streak = new Tween(0, { duration, easing: linear, delay: duration * 2 })
-	const revealed = new Tween(0, { duration, easing: linear, delay: duration * 3 })
-	const total = new Tween(0, { duration, easing: linear, delay: duration * 4 })
+	const timeLeft = new Tween(0, { duration, easing: linear })
+	const streak = new Tween(0, { duration, easing: linear, delay: duration })
+	const revealed = new Tween(0, { duration, easing: linear, delay: duration * 2 })
+	const total = new Tween(0, { duration, easing: linear, delay: duration * 3 })
 
 	$effect(() => {
-		base.set(round.score?.base ?? 0)
-		time.set((round.score?.time ?? 0) / 1000)
+		timeLeft.set(round.score?.timeLeft ?? 0)
 		streak.set(round.score?.streak ?? 0)
 		revealed.set(round.score?.revealed ?? 0)
 		total.set(round.score?.total ?? 0)
@@ -30,15 +28,12 @@
 <div id="score" class:hidden={!round.score}>
 	<span>Score:</span>
 	<div id="calc">
-		(<output
-			aria-labelledby="Base points for correct answer"
-			class:tweening={base.current !== base.target}
-			style="width: 3ch;">{base.current.toFixed(0)}</output
+		<output
+			aria-labelledby="Time left in seconds"
+			class:tweening={timeLeft.current !== timeLeft.target}
+			style="width: 4ch;">{timeLeft.current.toFixed(0)}s</output
 		>
-		-
-		<output aria-labelledby="Time penalty" style="width: 4ch;"
-			>{time.current < DURATION ? time.current.toFixed(0) : DURATION}s</output
-		>) x
+		x
 		<output aria-labelledby="Current streak multiplier. " name="streak" style="width: 2.5ch;"
 			>{streak.current.toFixed(1)}</output
 		>
@@ -102,11 +97,13 @@
 			text-align: initial;
 			position: absolute;
 			position-anchor: --output-label;
-			position-area: top span-left;
+			position-area: top left;
 			bottom: 3rem;
+			right: 0;
 			padding: 0.5rem 1rem;
 			border-radius: 1rem;
-			background-color: var(--grey-200);
+			background-color: var(--yellow);
+			color: #000;
 			text-wrap: pretty;
 			width: max-content;
 			max-width: 20ch;

@@ -6,29 +6,21 @@ ModlGuessr is a game where you need to find which Large Language Model you're ta
 
 I was looking for a fun idea to built with [Convex](https://convex.dev/referral/AXELRO9828), [Better Auth](https://www.better-auth.com/) and [Autumn](https://useautumn.com/)
 
-## Gameplay (WIP)
+## Gameplay
 
-This is an overall gameplay idea, everything is subject to change.
-
+You pick a difficulty. Easy, medium, hard
 You enter a chat room
-Maybe there is a pre-defined message or theme
+You're faced with a description of the AI's persona. ie: "This AI believes it's in the year 1995. Modern references will confuse it."
 You can chat with the LLM, now knowing which one it is.
-The more questions you ask, or the longer you take to find which one it is, the less points you get
-There are a couple of rounds
+There are 4 models to chose from
+As soon as you start chatting, a countdown starts
+You must pick one of the 4 options before the timer reaches the max.
+The longer you take to find which one it is, the less points you get
+This loop repeats 7 times
 In the end, you get a score and enter a leaderboard
 
-## Ideas, potential caviats
-
-These ideas all need to be explored and validated.
-
-Have a score starting at a certain number. Each seconds that passes, the scores lower a bit
-With each message, the score lowers even more
-A failed attempt divides the score by 2, 4, or 10
-Go like that for a few rounds. Maybe 7. Tune it so that it's neither too short, or too long
-Base game mode: Just a chat, a set of models to pick from (maybe 2 in easy mode, 4 in medium, all the models availaible in hard mode)
-Have leaderboard per difficulty level
-Scores should be smart. Sheer luck should give you very little chance to be top 1 (maybe leaderboard is an average if X games? Maybe there is just enough games so that it's impossible to get a full streak?)
-Be aware that it may be not fun at all
+The more correct answers you get in a row, the more you increase a streak multipler
+A fast LLM checks you managed to force the LLM to tell its name. If you did, you get an extra multiplier.
 
 ## Business model
 
@@ -38,49 +30,25 @@ So here is the planned model:
 
 - Freemium, with a few free games (ie: 3) initally
 - 1 free game per day
-- Small subscription plan (price TBD) for more games per day, week or month
-- Maybe a one time payment, higher price, for some unlimited mode (maybe yearly, just in case)
+- Small subscription plan 9€/mo for more games per month
+- One time payment, higher price price per ticket
+- Pay as you go for unlimited play
 
 ## Features to implement
 
 As the main goal is to explore the stack, here are some features we can implement because the tools make it easy.
 
-### Convex
-
-- Entire game logic
-- Run the LLMs with streaming
-- Real time leaderboard
-- Real time display of total games / messages / tokens ever used, all users combined, with an aggregate
-- See other players games
-- Complex aggregates to see stats like: Which model is the most recognized
-
-### Better Auth
-
-- Basic login
-- Unique usernames
-- Show last login method
-- Admin system (maybe see moderation)
-
-### Autumn
-
-- Use features to define if user can play
-- Paid plan
-- Referal program (get free games)
-
-### Resend
-
-- Send email for the referal program
-- Email confirmation
-
-### OpenAI
-
-- Generate usernames
-- Analyse games (check if the user managed to force the model to reveal its identity)
-
 ## Roadmap
 
 - [x] Setup SvelteKit
 - [x] Setup Convex
+  - [x] Basic database structure (games)
+  - [x] Stream LLM calls directly from AI SDK front-end to a Convex HTTP endpoint
+  - [x] Leaderboard for the best scores (aggregate)
+  - [x] Live count of all tokens ever used (aggregate)
+  - [x] Auto-stop round after a given time (scheduled function)
+  - [x] Fetch and store AI models from Vercel AI Gateway regularly (cron)
+  - [ ] Watch other players playing live
 - [x] Setup Better Auth
   - [x] Google Auth
   - [x] Username plugin
@@ -95,7 +63,7 @@ As the main goal is to explore the stack, here are some features we can implemen
   - [x] Convex prod is used
   - [x] Autumn prod is used
 - [x] Create a blog to document learnings
-- [ ] Gameplay with AI SDK
+- [x] Gameplay with AI SDK
   - [x] Find fun game loops
   - [x] Create game rounds
   - [x] Save messages
@@ -104,12 +72,16 @@ As the main goal is to explore the stack, here are some features we can implemen
   - [x] Save final game score
   - [x] Enter data in leaderboard
   - [x] Suggest next-game
-  - [ ] Different difficulty level
-- [x] Leaderboard
+  - [x] Different difficulty level
+  - [x] Generate "contraints" to make the game less repetitive
 - [x] Analytics
 - [ ] Homepage
 - [x] Referral program (Autumn + Resend)
+  - [x] Generate referral code
+  - [x] Redeem codes
+  - [x] Notify referer by email when a code is used
 - [ ] Share
+  - [ ] Nice OG images
 - [ ] Multiplayer
 - [ ] i18n
 

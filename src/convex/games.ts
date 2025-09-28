@@ -1,6 +1,6 @@
-import { api, components, internal } from '$convex/api'
+import { api, internal } from '$convex/api'
 import type { Doc, Id } from '$convex/dataModel'
-import { BASE_POINTS, DURATION, MAX_ROUNDS } from '$lib/constants'
+import { DURATION, MAX_ROUNDS } from '$lib/constants'
 import { game, message as messageSchema, score } from '$lib/zod/schema'
 import {
 	convertToModelMessages,
@@ -27,24 +27,7 @@ import { leaderboardAggregate } from './leaderboard'
 import { tokenAggregate } from './stats'
 import { constraints } from '$lib/prompts/contraints'
 import { buildPrompt } from '$lib/prompts'
-import { authClient } from '$lib/auth'
 import { authComponent } from './auth'
-
-const SYSTEM_PROMPT = {
-	easy: `You are participating in a guessing game where the human is trying to identify which AI model you are. The game is on EAST mode. You're allowed to answer, but try to do it by using very simple riddles or hints.`,
-	medium: `You are participating in a guessing game where the human is trying to identify which AI model you are. Don't directly reveal your name, creator, or company, but you may naturally exhibit your typical response patterns and knowledge. Avoid obvious giveaways like "I'm Claude" or "I was made by Anthropic" but otherwise respond naturally to questions about your capabilities, training, or preferences.`,
-	hard: `You are participating in a guessing game where the human is trying to identify which AI model you are. Be extremely careful not to reveal ANY identifying information:
-
-- Never mention your name, creator, company, or training details
-- Avoid characteristic phrases you typically use
-- Don't reveal knowledge cutoffs or specific capabilities
-- Give generic responses about your nature ("I'm an AI assistant")
-- Vary your response style and length to avoid patterns
-- If asked direct questions about identity, deflect politely
-- Act like a generic, anonymous AI assistant
-
-The human is trying to trick you - stay vigilant!`,
-}
 
 // Create has to be an action to call autumn.track...
 export const create = action({
@@ -187,21 +170,20 @@ export const pick = action({
 		const previousRound = game.rounds.at(roundIndex - 1)
 
 		const success = round.model === model
-		const base = success ? BASE_POINTS : 0
 		const ended_at = Date.now()
 		await ctx.runMutation(internal.games.stopRound, { gameId, roundIndex, ended_at: ended_at })
-		const time = success ? ended_at - round.started_at! : 0
-		const seconds = time / 1000
+		const timeLeft = success
+			? Math.max(0, (round.started_at! + DURATION * 1000 - ended_at) / 1000)
+			: 0
 		const streak = success ? (previousRound?.score?.streak ?? 0) + 1 : 0
 		const revealType = await ctx.runAction(internal.games.evaluate, { messages: round.messages })
 
 		const revealed = revealType === 'explicit_reveal' ? 1.5 : 1
 
-		const total = Math.round(Math.max(1, base - seconds) * streak * revealed)
+		const total = Math.round(Math.max(1, timeLeft) * streak * revealed)
 
 		let score = {
-			base,
-			time,
+			timeLeft,
 			revealed,
 			streak,
 			total,
@@ -433,8 +415,7 @@ export const autoStop = internalMutation({
 		rounds[roundIndex].ended_at = Date.now()
 		rounds[roundIndex].answer = 'Timeout'
 		rounds[roundIndex].score = {
-			base: 0,
-			time: DURATION * 1000,
+			timeLeft: 0,
 			revealed: 0,
 			streak: 0,
 			total: 0,

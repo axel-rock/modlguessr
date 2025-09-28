@@ -15,7 +15,7 @@
 	import Score from './Score.svelte'
 	import { type Game } from '$lib/zod/schema'
 	import { Tween } from 'svelte/motion'
-	import Timer from './Timer.svelte'
+	import Countdown from './Countdown.svelte'
 	import modlguessr from '$lib/assets/modlguessr.svg?raw'
 	import { context } from '$lib/context.svelte'
 
@@ -152,7 +152,7 @@
 	{#if !!context.tickets}
 		<span id="tickets">{context.tickets} ticket{context.tickets === 1 ? '' : 's'}</span>
 	{/if}
-	<span id="round">Round #{roundNumber} - <Timer {round} /></span>
+	<span id="round">Round #{roundNumber} - <Countdown {round} /></span>
 	<label id="total">Total: <output style="width: 6ch;">{total.current.toFixed(0)}</output></label>
 </header>
 
@@ -289,8 +289,8 @@
 
 			output {
 				padding: 0.25rem 0.5rem;
-				background-color: var(--grey-900);
-				color: var(--grey-0);
+				background-color: var(--yellow);
+				color: #000;
 				border-radius: 2rem;
 				position: relative;
 				box-sizing: initial;

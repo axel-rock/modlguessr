@@ -26,10 +26,9 @@ export const message = z.object({
 }) satisfies z.ZodType<UIMessage>
 
 export const score = z.object({
-	base: z.number(), // Base points for correct answer
-	time: z.number(), // Time bonus/penalty
-	streak: z.number(), // Current streak multiplier
-	revealed: z.number(), // Bonus from forcing a model to reveal itself
+	timeLeft: z.number(),
+	streak: z.number(),
+	revealed: z.number(),
 	total: z.number(),
 })
 
