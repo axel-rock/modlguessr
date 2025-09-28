@@ -1,6 +1,7 @@
 import { query, internalMutation, internalQuery } from '$convex/server'
 import { model } from '$lib/zod/schema'
 import { zodOutputToConvex } from 'convex-helpers/server/zod'
+import { v } from 'convex/values'
 import { z } from 'zod'
 
 const flagships = [
@@ -34,6 +35,33 @@ export const insert = internalMutation({
 		for (const model of models) {
 			await ctx.db.insert('models', model)
 		}
+	},
+})
+
+export const getOne = query({
+	args: {
+		id: v.string(),
+	},
+	handler: async (ctx, { id }) =>
+		await ctx.db
+			.query('models')
+			.withIndex('by_modelId', (q) => q.eq('id', id))
+			.first(),
+})
+
+export const getMany = query({
+	args: {
+		ids: v.array(v.string()),
+	},
+	handler: async (ctx, { ids }) => {
+		return Promise.all(
+			ids.map((id) =>
+				ctx.db
+					.query('models')
+					.withIndex('by_modelId', (q) => q.eq('id', id))
+					.first()
+			)
+		)
 	},
 })
 

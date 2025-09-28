@@ -18,6 +18,7 @@
 	import Countdown from './Countdown.svelte'
 	import modlguessr from '$lib/assets/modlguessr.svg?raw'
 	import { context } from '$lib/context.svelte'
+	import ModelButton from '$lib/components/ModelButton.svelte'
 
 	// let { data }: PageProps = $props()
 
@@ -175,27 +176,26 @@
 		</ul>
 	{/if}
 	<div id="actions">
-		<menu id="vote">
+		<menu id="vote" class="modelpicker">
 			{#each round?.models ?? [] as model (model)}
-				{@const provider = model.split('/')[0]}
-				{@const name = model.split('/')[1]}
-				<button
-					type="submit"
-					class="secondary"
-					name="model"
-					animate:flip={{ duration: 250, easing: sineInOut }}
-					onclick={() => pick(model)}
-					class:selected={selected === model}
-					class:correct={round?.model === model}
-					class:incorrect={round?.answer === model && round?.model !== model}
-					disabled={!game?.live ||
-						round?.answer !== undefined ||
-						(round?.messages?.length ?? 0) < 2}
-				>
-					<img src="/providers/{provider}.svg" alt={provider} onerror={handleError} />
-					<span class="provider">{provider}</span>
-					<span class="name">{name}</span>
-				</button>
+				{@const classes = {
+					secondary: true,
+					selected: selected === model,
+					correct: round?.model === model,
+					incorrect: round?.answer === model && round?.model !== model,
+				}}
+				<li>
+					<ModelButton
+						modelId={model}
+						type="submit"
+						class={classes}
+						name="model"
+						onclick={() => pick(model)}
+						disabled={!game?.live ||
+							round?.answer !== undefined ||
+							(round?.messages?.length ?? 0) < 2}
+					></ModelButton>
+				</li>
 			{/each}
 		</menu>
 
@@ -292,6 +292,7 @@
 				background-color: var(--yellow);
 				color: #000;
 				border-radius: 2rem;
+				font-size: 1.25em;
 				position: relative;
 				box-sizing: initial;
 				display: inline-block;
@@ -307,31 +308,6 @@
 		width: min(var(--narrow-page), 100%);
 		height: 100%;
 		justify-self: center;
-	}
-
-	#messages {
-		display: grid;
-		list-style: none;
-		padding: 0;
-		margin: 0;
-
-		.message {
-			max-width: min(60ch, 85%);
-			font-size: 1.2em;
-			scroll-snap-align: start;
-			scroll-snap-stop: always;
-			letter-spacing: -0.02em;
-			text-wrap: pretty;
-
-			&.assistant {
-				justify-self: start;
-			}
-
-			&.user {
-				justify-self: end;
-				color: var(--grey-600);
-			}
-		}
 	}
 
 	#actions {
@@ -365,64 +341,6 @@
 				background-color: var(--blue);
 				color: #000;
 			}
-		}
-	}
-
-	menu#vote {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: grid;
-		grid-template-columns: 1fr; /* mobile first: 1 column */
-		font-size: min(1.05em, 3.5vw);
-		gap: 1em;
-		margin-top: auto;
-
-		button {
-			display: grid;
-			grid-template-columns: 2rem auto 1fr;
-			text-align: start;
-			font-size: inherit;
-			gap: 0.25em 0.5em;
-			padding: 0.5em 1em;
-			border-radius: 3em;
-			--color: var(--grey-100);
-			border: 1px solid var(--color);
-			background-color: color-mix(in oklab, var(--color) 10%, transparent);
-
-			&.selected {
-				--color: var(--grey-200);
-			}
-			&.incorrect {
-				--color: var(--red);
-			}
-			&.correct {
-				--color: var(--green);
-			}
-
-			img {
-				height: 2rem;
-				aspect-ratio: 1;
-				justify-self: center;
-				border-radius: 0.5rem;
-			}
-
-			.name,
-			.provider {
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-
-			.name {
-				opacity: 0.5;
-			}
-		}
-	}
-
-	@media (min-width: 480px) {
-		menu#vote {
-			grid-template-columns: repeat(2, 1fr); /* tablet: 2 columns */
 		}
 	}
 

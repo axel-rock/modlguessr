@@ -62,7 +62,7 @@ textarea {
 	color: inherit;
 
 	&.big {
-		font-size: min(1.5rem, 5dvw);
+		font-size: min(1.25rem, 3dvw);
 		min-height: min(4rem, 8dvh);
 	}
 
@@ -95,9 +95,9 @@ textarea {
 
 textarea {
 	height: unset;
-	font-size: min(1.5rem, 5dvw);
+	font-size: min(1.25rem, 4dvw);
 	line-height: 1.25em;
-	min-height: min(4rem, 8dvh);
+	min-height: min(3rem, 6dvh);
 	max-height: 50dvh;
 	width: 100%;
 	padding: 1rem 1.5rem;

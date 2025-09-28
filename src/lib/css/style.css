@@ -5,6 +5,8 @@
 @import './form.css';
 @import './button.css';
 @import './utils.css';
+@import './chat.css';
+@import './modlguessr.css';
 
 :root {
 	/* Colors */
@@ -63,14 +65,17 @@ body > div > main {
 	h1.hero {
 		font-weight: 800;
 		letter-spacing: -0.02em;
-		font-size: 4rem;
+		font-size: 5rem;
 		margin-block: 4rem;
 		text-align: center;
 	}
 
 	h2.hero {
-		margin-bottom: 1rem;
-		opacity: 0.3;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		font-size: 3rem;
+		margin-block: 2rem;
+		text-align: center;
 	}
 }
 

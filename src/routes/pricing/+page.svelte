@@ -11,6 +11,8 @@
 
 	const convex = useConvexClient()
 	const user = $derived(context.user)
+
+	let copied = $state(false)
 	let code = $state<string | undefined>(undefined)
 	let activeProducts = $state<CustomerProduct[] | undefined>(undefined)
 
@@ -112,7 +114,20 @@
 
 		{#if code}
 			<p>Your referral link:</p>
-			<input type="url" name="referral" value="{page.url.origin}/referral/{code}" readonly />
+			<input
+				type="url"
+				name="referral"
+				value={copied ? 'Copied!' : page.url.origin + '/referral/' + code}
+				readonly
+				class="big"
+				onclick={() => {
+					navigator.clipboard.writeText(page.url.origin + '/referral/' + code)
+					copied = true
+					setTimeout(() => {
+						copied = false
+					}, 2000)
+				}}
+			/>
 		{:else}
 			<p>Sign in to get your referral link</p>
 			<a href="/login?redirect=/pricing" role="button" class="contrast big">Sign in</a>
@@ -233,6 +248,7 @@
 			font-size: 1.25rem;
 			font-weight: 500;
 			border: none;
+			cursor: pointer;
 		}
 	}
 </style>

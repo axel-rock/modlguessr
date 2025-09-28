@@ -10,5 +10,5 @@ export default defineSchema({
 		user_id: v.string(),
 		balance: v.optional(v.number()),
 	}).index('by_user', ['user_id']),
-	models: defineTable(zodOutputToConvex(model)),
+	models: defineTable(zodOutputToConvex(model)).index('by_modelId', ['id']),
 })

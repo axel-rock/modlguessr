@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ModelButton from '$lib/components/ModelButton.svelte'
 	import type { PageProps } from './$types'
 
 	let { data }: PageProps = $props()
@@ -26,8 +27,10 @@
 			<li>
 				<img src="/providers/{provider}.svg" alt={provider} onerror={handleError} />
 				<div>
-					<b class="name">{model.id}</b>
+					<span class="name"><b>{model.name}</b> <span class="id">{model.id}</span></span>
 					<span class="description">{model.description}</span>
+
+					<ModelButton modelId={model.id} />
 				</div>
 			</li>
 		{/each}
@@ -44,6 +47,10 @@
 		display: grid;
 		grid-template-columns: 2rem 1fr;
 		gap: 0.5rem;
+
+		.id {
+			font-weight: 200;
+		}
 
 		img {
 			border-radius: 0.5rem;

@@ -90,7 +90,9 @@
 				{#each recentGames as game}
 					<li>
 						<span class="difficulty">{game.difficulty}</span>
-						<span class="ended_at">{formatDateRelative(game.ended_at ?? 0)}</span>
+						<span class="ended_at"
+							>{game.ended_at ? formatDateRelative(game.ended_at) : 'In progress'}</span
+						>
 						<span class="score">{game.score}</span>
 					</li>
 				{/each}
@@ -187,8 +189,9 @@
 			text-align: end;
 		}
 	}
+
 	hr {
-		background-color: var(--grey-900);
+		background-color: #000;
 		height: 2px;
 	}
 </style>

@@ -4,6 +4,43 @@ import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zod'
 import { gateway, type UIMessage } from 'ai'
 
+export type AIModel = {
+	id: string
+	name: string
+	description: string
+	owned_by: string
+	type: 'language' | 'image' | 'document' | 'embedding'
+	context_window: number
+	max_tokens: number
+	pricing: {
+		input: number
+		output: number
+	}
+	created: number
+}
+
+export type Model = Awaited<ReturnType<typeof gateway.getAvailableModels>>['models'][number]
+
+export const model = z.object({
+	id: z.string(),
+	name: z.string(),
+	description: z.string().optional(),
+	pricing: z
+		.object({
+			input: z.string(),
+			output: z.string(),
+			cachedInputTokens: z.string().optional(),
+			cacheCreationInputTokens: z.string().optional(),
+		})
+		.optional(),
+	specification: z.object({
+		provider: z.string(),
+		modelId: z.string(),
+		specificationVersion: z.literal('v2'),
+	}),
+	modelType: z.enum(['language', 'image', 'embedding']),
+}) satisfies z.ZodType<Model>
+
 const TextUIPartSchema = z.object({
 	type: z.literal('text'),
 	text: z.string(),
@@ -61,40 +98,3 @@ export const public_game = game
 	.extend({ rounds: z.array(round.partial({ model: true })) })
 /** Game object representation for the front-end */
 export type Game = z.infer<typeof public_game>
-
-export type AIModel = {
-	id: string
-	name: string
-	description: string
-	owned_by: string
-	type: 'language' | 'image' | 'document' | 'embedding'
-	context_window: number
-	max_tokens: number
-	pricing: {
-		input: number
-		output: number
-	}
-	created: number
-}
-
-export type Model = Awaited<ReturnType<typeof gateway.getAvailableModels>>['models'][number]
-
-export const model = z.object({
-	id: z.string(),
-	name: z.string(),
-	description: z.string().optional(),
-	pricing: z
-		.object({
-			input: z.string(),
-			output: z.string(),
-			cachedInputTokens: z.string().optional(),
-			cacheCreationInputTokens: z.string().optional(),
-		})
-		.optional(),
-	specification: z.object({
-		provider: z.string(),
-		modelId: z.string(),
-		specificationVersion: z.literal('v2'),
-	}),
-	modelType: z.enum(['language', 'image', 'embedding']),
-}) satisfies z.ZodType<Model>

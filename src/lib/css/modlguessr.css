@@ -1,0 +1,22 @@
+menu.modelpicker {
+	display: grid;
+	grid-template-columns: 1fr;
+	font-size: min(1.05em, 3.5vw);
+	gap: 0.5rem;
+
+	li {
+		display: contents;
+	}
+}
+
+@media (min-width: 350px) {
+	menu.modelpicker {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (min-width: 700px) {
+	menu.modelpicker {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}

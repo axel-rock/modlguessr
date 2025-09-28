@@ -40,6 +40,9 @@
 				<img src="/logo/github.svg" alt="GitHub" />
 				<span>GitHub</span>
 			</a>
+			<span></span>
+			<span>Privacy policy / Terms of service</span>
+			<span class="copyright">Copyright © 2025 ModlGuessr</span>
 		</div>
 	</div>
 </footer>
@@ -125,5 +128,9 @@
 			border-bottom-right-radius: var(--radius);
 			background-color: var(--grey-0);
 		}
+	}
+
+	.copyright {
+		margin-top: auto;
 	}
 </style>
