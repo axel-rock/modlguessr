@@ -46,10 +46,7 @@ export const get = query({
 	args: {},
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity()
-		if (identity === null) {
-			console.warn('Not authenticated')
-			return null
-		}
+		if (identity === null) return null
 		const user_id = identity.subject as string
 		const data = await ctx.db
 			.query('tickets')

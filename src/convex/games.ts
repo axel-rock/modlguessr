@@ -1,8 +1,7 @@
-import { api, components, internal } from '$convex/api'
-import type { DataModel, Doc, Id } from '$convex/dataModel'
-import { BASE_POINTS, MAX_ROUNDS } from '$lib/constants'
+import { api, internal } from '$convex/api'
+import type { Doc, Id } from '$convex/dataModel'
+import { BASE_POINTS, DURATION, MAX_ROUNDS } from '$lib/constants'
 import { game, message as messageSchema, score } from '$lib/zod/schema'
-import { TableAggregate } from '@convex-dev/aggregate'
 import {
 	convertToModelMessages,
 	generateObject,
@@ -26,16 +25,8 @@ import {
 import { authComponent } from './auth'
 import { autumn } from './autumn'
 import { tokenAggregate } from './stats'
-
-export const leaderboardAggregate = new TableAggregate<{
-	Namespace: string // difficulty only
-	Key: number
-	DataModel: DataModel
-	TableName: 'games'
-}>(components.aggregateScores, {
-	namespace: (doc) => doc.difficulty,
-	sortKey: (doc) => doc.score ?? 0,
-})
+import { leaderboardAggregate } from './leaderboard'
+import { migrations } from './migrations'
 
 const SYSTEM_PROMPT = {
 	easy: `You are participating in a guessing game where the human is trying to identify which AI model you are. The game is on EAST mode. You're allowed to answer, but try to do it by using very simple riddles or hints.`,
@@ -113,6 +104,8 @@ export const nextRound = mutation({
 		const round: Doc<'games'>['rounds'][number] = {
 			model,
 			models,
+			prompt: '',
+			description: '',
 			messages: [],
 		}
 
@@ -153,11 +146,16 @@ export const _get = internalQuery({
 	handler: async (ctx, args) => ctx.db.get(args.gameId),
 })
 
-/** Temporary function to check the games in DB until we get leaderboard */
 export const list = query({
 	args: {},
 	handler: async (ctx) => {
-		let games = await ctx.db.query('games').collect()
+		const identity = await ctx.auth.getUserIdentity()
+		if (identity === null) return undefined
+		const user_id = identity.subject
+		let games = await ctx.db
+			.query('games')
+			.withIndex('by_user', (q) => q.eq('user_id', user_id))
+			.collect()
 		return games.reverse()
 	},
 })
@@ -179,6 +177,8 @@ export const pick = action({
 		const round = game.rounds.at(roundIndex)
 		if (!round) throw new Error('Round not found')
 		if (round.answer) throw new Error('Round already answered')
+		if (round.scheduled_timeout)
+			await ctx.scheduler.cancel(round.scheduled_timeout as Id<'_scheduled_functions'>)
 
 		const previousRound = game.rounds.at(roundIndex - 1)
 
@@ -205,9 +205,7 @@ export const pick = action({
 
 		await ctx.runMutation(internal.games.saveScore, { gameId, answer: model, roundIndex, score })
 
-		if (roundIndex === MAX_ROUNDS - 1) {
-			await ctx.runMutation(internal.games.endGame, { gameId })
-		}
+		if (roundIndex === MAX_ROUNDS - 1) await ctx.runMutation(internal.games.endGame, { gameId })
 
 		if (round.model === model) return { success: true }
 		return { success: false }
@@ -385,10 +383,16 @@ export const startRound = internalMutation({
 		const game = await ctx.db.get(gameId)
 		if (!game) throw new Error('Game not found')
 		game.rounds[roundIndex].started_at = started_at
+		game.rounds[roundIndex].scheduled_timeout = await ctx.scheduler.runAfter(
+			DURATION * 1000,
+			internal.games.autoStop,
+			{ gameId, roundIndex }
+		)
 		await ctx.db.patch(gameId, { rounds: game.rounds, live: true })
 	},
 })
 
+/** Stop a round when the user answers */
 export const stopRound = internalMutation({
 	args: {
 		gameId: v.id('games'),
@@ -404,43 +408,28 @@ export const stopRound = internalMutation({
 	},
 })
 
-// Get leaderboard for a specific difficulty
-export const getLeaderboard = query({
+/** End a round when the time runs out */
+export const autoStop = internalMutation({
 	args: {
-		difficulty: v.string(),
-		limit: v.optional(v.number()),
+		gameId: v.id('games'),
+		roundIndex: v.number(),
 	},
-	handler: async (ctx, { difficulty, limit = 50 }) => {
-		const result = await leaderboardAggregate.paginate(ctx, {
-			namespace: difficulty,
-			order: 'desc',
-			pageSize: limit,
-		})
-		if (result.page.length === 0) return []
-		try {
-			const entries = await Promise.all(
-				result.page.map(async (item) => {
-					const game = await ctx.db.get(item.id)
-					const user = await authComponent.getAnyUserById(ctx, game!.user_id)
-					return {
-						user_id: game!.user_id,
-						score: item.key,
-						gameId: game!._id,
-						user: {
-							username: user!.username,
-							displayUsername: user!.displayUsername,
-							image: user!.image,
-							id: user!.userId,
-						},
-					}
-				})
-			)
-			return entries.filter(
-				(entry, index, self) => index === self.findIndex((t) => t.user_id === entry.user_id)
-			)
-		} catch (error) {
-			console.error(error)
-			return []
+	handler: async (ctx, { gameId, roundIndex }) => {
+		const game = await ctx.db.get(gameId)
+		if (!game) throw new Error('Game not found')
+
+		const rounds = game.rounds
+		rounds[roundIndex].ended_at = Date.now()
+		rounds[roundIndex].answer = 'Timeout'
+		rounds[roundIndex].score = {
+			base: 0,
+			time: DURATION * 1000,
+			revealed: 0,
+			streak: 0,
+			total: 0,
 		}
+		await ctx.db.patch(gameId, { rounds: rounds })
+
+		if (roundIndex === MAX_ROUNDS - 1) await ctx.runMutation(internal.games.endGame, { gameId })
 	},
 })

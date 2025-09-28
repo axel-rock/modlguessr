@@ -41,6 +41,9 @@ export const round = z.object({
 	answer: z.optional(z.string()),
 	messages: z.array(message),
 	score: z.optional(score),
+	prompt: z.optional(z.string()),
+	description: z.optional(z.string()),
+	scheduled_timeout: z.optional(z.string()),
 })
 
 export const game = z.object({

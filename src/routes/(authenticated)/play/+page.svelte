@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { useConvexClient } from 'convex-svelte'
-	import type { PageProps } from './$types'
+	import { useConvexClient, useQuery } from 'convex-svelte'
+	// import type { PageProps } from './$types'
 	import { api } from '$convex/api'
 	import { goto } from '$app/navigation'
+	import { formatDateRelative } from '$lib/utils/intl.svelte'
 
 	// let { data }: PageProps = $props()
 	const convex = useConvexClient()
@@ -16,6 +17,11 @@
 		})
 		goto(`/play/${gameId}`)
 	}
+
+	const unfinishedGamesQuery = useQuery(api.games.list, {})
+	const unfinishedGames = $derived(
+		unfinishedGamesQuery.data?.filter((game) => !game.ended_at) ?? []
+	)
 </script>
 
 <main>
@@ -43,6 +49,22 @@
 			</article>
 		</li>
 	</menu>
+
+	{#if unfinishedGames.length > 0}
+		<hr />
+
+		<h2 class="hero">Pick up where you left off</h2>
+		<menu class="unfinished-games">
+			{#each unfinishedGames as game}
+				<li>
+					<a href={`/play/${game._id}`}
+						>{game.difficulty} - {formatDateRelative(game._creationTime ?? 0)} - Round #{game.rounds
+							.length} - Score: {game.score ?? 0}</a
+					>
+				</li>
+			{/each}
+		</menu>
+	{/if}
 </main>
 
 <style>
@@ -75,6 +97,7 @@
 		li {
 			display: contents;
 
+			/* Difficulty */
 			article {
 				border: solid 1px color-mix(in oklab, var(--bg) 100%, transparent);
 				display: grid;
@@ -108,6 +131,18 @@
 					position: absolute;
 				}
 			}
+		}
+	}
+
+	menu.unfinished-games {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+
+		/* Unfinished games */
+		a {
+			text-transform: capitalize;
+			font-size: 1.25rem;
 		}
 	}
 </style>

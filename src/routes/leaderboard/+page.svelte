@@ -12,15 +12,15 @@
 	let limit = 100
 
 	const leaderboardQueries = {
-		easy: useQuery(api.games.getLeaderboard, {
+		easy: useQuery(api.leaderboard.get, {
 			difficulty: 'easy',
 			limit,
 		}),
-		medium: useQuery(api.games.getLeaderboard, {
+		medium: useQuery(api.leaderboard.get, {
 			difficulty: 'medium',
 			limit,
 		}),
-		hard: useQuery(api.games.getLeaderboard, {
+		hard: useQuery(api.leaderboard.get, {
 			difficulty: 'hard',
 			limit,
 		}),
@@ -81,19 +81,21 @@
 			{/each}
 		</ul>
 
-		<hr />
+		{#if recentGames?.length > 0}
+			<hr />
 
-		<h2 class="hero">Your latest games</h2>
+			<h2 class="hero">Your latest games</h2>
 
-		<ul class="recent-games">
-			{#each recentGames as game}
-				<li>
-					<span class="difficulty">{game.difficulty}</span>
-					<span class="ended_at">{formatDateRelative(game.ended_at ?? 0)}</span>
-					<span class="score">{game.score}</span>
-				</li>
-			{/each}
-		</ul>
+			<ul class="recent-games">
+				{#each recentGames as game}
+					<li>
+						<span class="difficulty">{game.difficulty}</span>
+						<span class="ended_at">{formatDateRelative(game.ended_at ?? 0)}</span>
+						<span class="score">{game.score}</span>
+					</li>
+				{/each}
+			</ul>
+		{/if}
 	</div>
 </main>
 
