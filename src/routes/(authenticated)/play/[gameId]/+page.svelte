@@ -209,7 +209,13 @@
 					}}
 					bind:value={input}
 				></textarea>
-				<button id="send" type="submit" disabled={chat.status !== 'ready' || !input}>Send</button>
+				<button id="send" type="submit" disabled={chat.status !== 'ready' || !input}>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"
+						><!--!Font Awesome Pro v7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2025 Fonticons, Inc.--><path
+							d="M306.6 356L383 550.1L540.8 121.8L306.6 356zM518.2 99.2L89.9 257L284 333.4L518.2 99.2zM275.5 364.5L44.8 273.6L0 256L45.1 239.4L568.5 46.5L608 32L593.5 71.5L400.6 594.9L384 640L366.4 595.2L275.5 364.5z"
+						/></svg
+					>
+				</button>
 			</form>
 		{/if}
 	</div>
@@ -404,6 +410,8 @@
 		position: relative;
 		/* margin-inline: -2rem; */
 
+		--button-color: var(--blue);
+
 		textarea {
 			padding: 1rem 4rem 1rem 1.5rem;
 			border-radius: 2rem;
@@ -412,20 +420,44 @@
 		#send {
 			all: unset;
 			position: absolute;
-			right: 1rem;
-			bottom: 1rem;
+			display: grid;
+			place-items: center;
+
+			height: calc(100% - 1rem);
+			max-height: 3rem;
+			aspect-ratio: 1;
+			right: 0.5rem;
+			bottom: 0.5rem;
 			font-size: 1rem;
 			padding: 0;
 			margin: 0;
 			border: none;
-			background-color: transparent;
+			background-color: var(--button-color);
+			border-radius: 2rem;
 			color: var(--grey-700);
 			cursor: pointer;
+
+			&[disabled] {
+				--button-color: var(--grey-200);
+				opacity: 0.5;
+			}
+
+			&:user-invalid {
+				--button-color: var(--pink);
+				opacity: 0.5;
+			}
 			&:hover {
 				color: var(--grey-900);
 			}
 			&:active {
 				color: var(--grey-700);
+			}
+			svg {
+				width: 60%;
+				height: 60%;
+				path {
+					fill: #000;
+				}
 			}
 		}
 	}
