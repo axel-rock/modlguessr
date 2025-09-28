@@ -42,7 +42,7 @@ input[type='datetime-local'],
 input::file-selector-button,
 select,
 textarea {
-	height: 4rem;
+	height: 2rem;
 	padding: 0 1.5rem;
 	align-items: center;
 	gap: 0.5rem;
@@ -60,6 +60,11 @@ textarea {
 	border-radius: 2rem;
 	border: 1.5px solid var(--grey-200);
 	color: inherit;
+
+	&.big {
+		font-size: min(1.5rem, 5dvw);
+		min-height: min(4rem, 8dvh);
+	}
 
 	&:focus {
 		border: 1.5px solid color-mix(in oklab, var(--brand) 50%, transparent);
@@ -90,12 +95,12 @@ textarea {
 
 textarea {
 	height: unset;
-	min-height: 4rem;
-	max-height: 80dvh;
+	font-size: min(1.5rem, 5dvw);
+	min-height: min(4rem, 8dvh);
+	max-height: 50dvh;
 	width: 100%;
 	padding: 1rem 1.5rem;
 	border-radius: 1rem;
-	font-size: 1.25rem;
 	resize: vertical;
 	font-family: inherit;
 	field-sizing: content;

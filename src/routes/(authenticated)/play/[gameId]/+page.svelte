@@ -197,7 +197,6 @@
 			<form id="message" onsubmit={handleSubmit}>
 				<textarea
 					name="message"
-					id="message"
 					placeholder="Type your message here..."
 					onkeydown={(event: KeyboardEvent) => {
 						// Use a Slack-like submit behaviour: "Enter" submits. Any combo of Enter + CTRL, Shift, Alt will jump a line instead
@@ -407,7 +406,7 @@
 
 		textarea {
 			padding: 1rem 4rem 1rem 1.5rem;
-			max-height: 50dvh;
+			border-radius: 2rem;
 		}
 
 		#send {

@@ -108,6 +108,7 @@
 			<label for="username">Username, displayed on the leaderboard</label>
 			<input
 				type="text"
+				class="big"
 				name="username"
 				id="username"
 				placeholder="Username"
@@ -123,6 +124,7 @@
 		</div>
 
 		<button
+			id="submit"
 			type="submit"
 			class="contrast big"
 			disabled={isCurrent || !isAvailable || user?.displayUsername === username}>{text}</button
@@ -159,8 +161,8 @@
 			display: grid;
 			grid-template-columns: 1fr;
 
-			#username {
-				font-size: 1.5rem;
+			button[type='submit'] {
+				min-height: 4rem;
 			}
 		}
 
