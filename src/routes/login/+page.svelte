@@ -16,6 +16,7 @@
 	console.log(lastMethod)
 
 	$effect(() => {
+		console.log('userQuery.data', userQuery.data, redirect)
 		if (userQuery.data) goto(redirect)
 	})
 </script>
