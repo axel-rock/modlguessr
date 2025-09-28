@@ -41,5 +41,7 @@ export function buildPrompt(
 	Persona: ${constraint}
 	
 	Player context: Display name: ${user.displayUsername} | Full name: ${user.name}
+
+	Answer in the same language as the player.
 	`
 }

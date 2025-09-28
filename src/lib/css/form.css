@@ -96,6 +96,7 @@ textarea {
 textarea {
 	height: unset;
 	font-size: min(1.5rem, 5dvw);
+	line-height: 1.25em;
 	min-height: min(4rem, 8dvh);
 	max-height: 50dvh;
 	width: 100%;

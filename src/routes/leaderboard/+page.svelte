@@ -182,5 +182,9 @@
 				}
 			}
 		}
+
+		.score {
+			text-align: end;
+		}
 	}
 </style>

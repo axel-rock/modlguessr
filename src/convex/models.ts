@@ -22,6 +22,8 @@ const flagships = [
 	'xai/grok-4-fast-non-reasoning',
 ]
 
+const decomissioned = ['meta/llama-3-8b']
+
 const price_cap = 1.5 / 1_000_000
 
 export const insert = internalMutation({
@@ -47,6 +49,7 @@ export const getRandomSet = internalQuery({
 	handler: async (ctx, { difficulty }) => {
 		let models = await ctx.db.query('models').collect()
 		models = models.filter((model) => model.modelType === 'language')
+		models = models.filter((model) => !decomissioned.includes(model.id))
 		models = models.filter((model) => model.pricing && +model.pricing.input <= price_cap)
 		models = models.filter((model) => !model.id.includes('code') && !model.id.includes('morph')) // Remove coding models
 		models = models.filter((model) => model.specification.provider !== 'stealth') // Stealth models are Grok

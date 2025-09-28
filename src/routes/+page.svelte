@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { api } from '$convex/api'
 	import { useQuery } from 'convex-svelte'
+	import { untrack } from 'svelte'
 	import { expoInOut } from 'svelte/easing'
 	import { Tween } from 'svelte/motion'
 
@@ -12,7 +13,7 @@
 
 	$effect(() => {
 		const count = tokensQuery.data?.total ?? 0
-		if (tokens.current === 0 && count !== 0)
+		if (untrack(() => tokens.current) === 0 && count !== 0)
 			tokens = new Tween(count, { duration: 5000, easing: expoInOut })
 		else tokens.set(count)
 	})
