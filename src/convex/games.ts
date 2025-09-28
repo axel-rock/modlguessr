@@ -411,7 +411,6 @@ export const getLeaderboard = query({
 		limit: v.optional(v.number()),
 	},
 	handler: async (ctx, { difficulty, limit = 50 }) => {
-		console.log('getLeaderboard', difficulty, limit)
 		const result = await leaderboardAggregate.paginate(ctx, {
 			namespace: difficulty,
 			order: 'desc',
