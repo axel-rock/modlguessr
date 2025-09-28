@@ -18,7 +18,7 @@
 	})
 </script>
 
-<main>
+<main id="home">
 	<h1 class="hero">Can you guess the model?</h1>
 
 	<p>

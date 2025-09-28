@@ -124,7 +124,6 @@
 	main {
 		width: 100%;
 		background-color: var(--pink);
-		padding-bottom: 4rem;
 	}
 
 	#plans {

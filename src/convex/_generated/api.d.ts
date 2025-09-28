@@ -10,13 +10,16 @@
 
 import type * as auth from "../auth.js";
 import type * as autumn from "../autumn.js";
+import type * as crons from "../crons.js";
 import type * as email from "../email.js";
 import type * as games from "../games.js";
 import type * as http from "../http.js";
+import type * as models from "../models.js";
 import type * as openai from "../openai.js";
 import type * as referral from "../referral.js";
 import type * as stats from "../stats.js";
 import type * as tickets from "../tickets.js";
+import type * as vercel from "../vercel.js";
 
 import type {
   ApiFromModules,
@@ -35,13 +38,16 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   autumn: typeof autumn;
+  crons: typeof crons;
   email: typeof email;
   games: typeof games;
   http: typeof http;
+  models: typeof models;
   openai: typeof openai;
   referral: typeof referral;
   stats: typeof stats;
   tickets: typeof tickets;
+  vercel: typeof vercel;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

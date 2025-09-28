@@ -29,8 +29,8 @@
 		overflow: hidden;
 
 		&.big {
-			font-size: 1.5rem;
-			min-height: 4rem;
+			font-size: min(1.5rem, 5dvw);
+			min-height: min(4rem, 8dvh);
 			border-radius: 2rem;
 		}
 	}

@@ -1,7 +1,6 @@
 import { api, components, internal } from '$convex/api'
 import type { DataModel, Doc, Id } from '$convex/dataModel'
 import { BASE_POINTS, MAX_ROUNDS } from '$lib/constants'
-import { MODEL_SETS } from '$lib/models'
 import { game, message as messageSchema, score } from '$lib/zod/schema'
 import { TableAggregate } from '@convex-dev/aggregate'
 import {
@@ -108,8 +107,8 @@ export const nextRound = mutation({
 		const game = await ctx.db.get(args.gameId)
 		if (!game) throw new Error('Game not found')
 
-		const models = getRandomSet(MODEL_SETS, game.difficulty)
-		const model = getRandomModel(models)
+		const models = await ctx.runQuery(internal.models.getRandomSet, { difficulty: game.difficulty })
+		const model = models[~~(Math.random() * models.length)]
 
 		const round: Doc<'games'>['rounds'][number] = {
 			model,
@@ -156,11 +155,10 @@ export const _get = internalQuery({
 
 /** Temporary function to check the games in DB until we get leaderboard */
 export const list = query({
-	args: {
-		limit: v.optional(v.number()),
-	},
-	handler: async (ctx, { limit = 50 }) => {
-		return ctx.db.query('games').take(limit)
+	args: {},
+	handler: async (ctx) => {
+		let games = await ctx.db.query('games').collect()
+		return games.reverse()
 	},
 })
 
@@ -406,15 +404,6 @@ export const stopRound = internalMutation({
 	},
 })
 
-function getRandomSet(sets: typeof MODEL_SETS, difficulty: 'easy' | 'medium' | 'hard') {
-	const set = sets[difficulty][~~(Math.random() * MODEL_SETS[difficulty].length)]
-	return set.sort(() => Math.random() - 0.5)
-}
-
-function getRandomModel(models: string[]) {
-	return models[~~(Math.random() * models.length)]
-}
-
 // Get leaderboard for a specific difficulty
 export const getLeaderboard = query({
 	args: {
@@ -422,27 +411,37 @@ export const getLeaderboard = query({
 		limit: v.optional(v.number()),
 	},
 	handler: async (ctx, { difficulty, limit = 50 }) => {
+		console.log('getLeaderboard', difficulty, limit)
 		const result = await leaderboardAggregate.paginate(ctx, {
 			namespace: difficulty,
 			order: 'desc',
 			pageSize: limit,
 		})
-		return Promise.all(
-			result.page.map(async (item) => {
-				const game = await ctx.db.get(item.id)
-				const user = await authComponent.getAnyUserById(ctx, game!.user_id)
-				return {
-					user_id: game!.user_id,
-					score: item.key,
-					gameId: game!._id,
-					user: {
-						username: user!.username,
-						displayUsername: user!.displayUsername,
-						image: user!.image,
-						id: user!.userId,
-					},
-				}
-			})
-		)
+		if (result.page.length === 0) return []
+		try {
+			const entries = await Promise.all(
+				result.page.map(async (item) => {
+					const game = await ctx.db.get(item.id)
+					const user = await authComponent.getAnyUserById(ctx, game!.user_id)
+					return {
+						user_id: game!.user_id,
+						score: item.key,
+						gameId: game!._id,
+						user: {
+							username: user!.username,
+							displayUsername: user!.displayUsername,
+							image: user!.image,
+							id: user!.userId,
+						},
+					}
+				})
+			)
+			return entries.filter(
+				(entry, index, self) => index === self.findIndex((t) => t.user_id === entry.user_id)
+			)
+		} catch (error) {
+			console.error(error)
+			return []
+		}
 	},
 })

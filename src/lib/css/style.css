@@ -8,12 +8,13 @@
 
 :root {
 	/* Colors */
-	--brand: #f15a22;
+	--brand: #ff66c8;
 	--brand-contrast: #fff;
 	--narrow-page: 80ch;
 	--background-color: var(--grey-0);
 	--yellow: #ffd600;
 	--pink: #ff66c8;
+	--blue: #33caff;
 
 	background-color: var(--background-color);
 	color: var(--grey-800);
@@ -42,6 +43,13 @@
 		position: sticky;
 		top: 0;
 		background-color: var(--grey-0);
+
+		/* Hide the main header (the one with a play button) on mobile */
+		@media (width < 600px) {
+			&:has(a[href='/play']) {
+				display: none;
+			}
+		}
 	}
 
 	color-scheme: light dark;

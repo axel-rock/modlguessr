@@ -4,20 +4,35 @@
 	import { api } from '$convex/api'
 	import { flip } from 'svelte/animate'
 	import { sineInOut } from 'svelte/easing'
+	import { formatDateRelative } from '$lib/utils/intl.svelte'
 
 	let { data }: PageProps = $props()
 
 	let difficulty = $state('easy')
-	let limit = $state(100)
+	let limit = 100
 
-	let leaderboardQuery = $derived(
-		useQuery(api.games.getLeaderboard, {
-			difficulty,
+	const leaderboardQueries = {
+		easy: useQuery(api.games.getLeaderboard, {
+			difficulty: 'easy',
 			limit,
-		})
+		}),
+		medium: useQuery(api.games.getLeaderboard, {
+			difficulty: 'medium',
+			limit,
+		}),
+		hard: useQuery(api.games.getLeaderboard, {
+			difficulty: 'hard',
+			limit,
+		}),
+	}
+
+	const leaderboard = $derived(
+		leaderboardQueries[difficulty as keyof typeof leaderboardQueries].data ?? []
 	)
 
-	const leaderboard = $derived(leaderboardQuery.data ?? [])
+	let recentGamesQuery = $derived(useQuery(api.games.list, {}))
+
+	const recentGames = $derived(recentGamesQuery.data ?? [])
 </script>
 
 <main id="leaderboard">
@@ -48,16 +63,34 @@
 			</li>
 		</menu>
 
-		<ul>
+		<ul class="leaderboard">
 			{#if leaderboard.length === 0}
 				<li>No entries</li>
 			{/if}
 			{#each leaderboard as entry, index (entry)}
 				<li animate:flip={{ duration: 250, easing: sineInOut }}>
 					<span class="rank">#{index + 1}</span>
-					<img src={entry.user?.image} alt={entry.user?.displayUsername} />
+					<img
+						src={entry.user?.image}
+						alt={entry.user?.displayUsername}
+						referrerPolicy="no-referrer"
+					/>
 					<span class="username">{entry.user?.displayUsername}</span>
 					<span class="score">{entry.score}</span>
+				</li>
+			{/each}
+		</ul>
+
+		<hr />
+
+		<h2 class="hero">Your latest games</h2>
+
+		<ul class="recent-games">
+			{#each recentGames as game}
+				<li>
+					<span class="difficulty">{game.difficulty}</span>
+					<span class="ended_at">{formatDateRelative(game.ended_at ?? 0)}</span>
+					<span class="score">{game.score}</span>
 				</li>
 			{/each}
 		</ul>
@@ -98,10 +131,21 @@
 			color: inherit;
 		}
 
-		ul {
+		ul.leaderboard,
+		ul.recent-games {
 			display: grid;
 			grid-template-columns: auto 2rem 1fr auto;
 			font-size: 2rem;
+
+			&.leaderboard {
+				grid-template-columns: auto 2rem 1fr auto;
+			}
+			&.recent-games {
+				grid-template-columns: auto 1fr auto;
+				li {
+					gap: 1rem;
+				}
+			}
 
 			li {
 				display: grid;
@@ -112,6 +156,14 @@
 
 				.rank {
 					justify-self: end;
+				}
+
+				.difficulty {
+					text-transform: capitalize;
+				}
+
+				.ended_at {
+					opacity: 0.3;
 				}
 
 				img {

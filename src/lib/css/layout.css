@@ -30,7 +30,7 @@ body {
 		& > header,
 		& > main,
 		& > footer {
-			padding: min(1rem, 1.5dvw) min(2rem, 3dvw);
+			padding: max(1.5rem, 1.5dvw) max(1.5rem, 3dvw);
 			width: 100%;
 			margin-inline: auto;
 		}
@@ -45,7 +45,7 @@ body {
 			border-bottom-right-radius: var(--radius);
 
 			&:has(+ footer) {
-				padding-bottom: 2rem;
+				padding-bottom: 6rem;
 			}
 		}
 	}
@@ -60,42 +60,6 @@ body {
 @media (max-width: 600px) {
 	body > div > main {
 		padding: 0 1rem;
-	}
-}
-/* 
-body:has(main.full-height) {
-	display: grid;
-	grid-template-rows: auto 1fr;
-	height: 100dvh;
-
-	main {
-		overflow-y: auto;
-	}
-} */
-
-nav {
-	display: flex;
-	align-items: baseline;
-	gap: 0.66rem;
-	padding: 0;
-
-	span {
-		margin-inline: -0.25rem;
-		color: var(--brand);
-	}
-}
-
-header {
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	h1,
-	h1 a {
-		text-box-trim: trim-both;
-		/* text-box-edge: cap alphabetic; */
-	}
-	& > nav:last-child {
-		margin-left: auto;
 	}
 }
 

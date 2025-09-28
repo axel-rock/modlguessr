@@ -11,14 +11,13 @@
 	import { marked } from 'marked'
 	import { flip } from 'svelte/animate'
 	import { linear, sineIn, sineInOut, sineOut } from 'svelte/easing'
-	import { MODEL_SETS } from '$lib/models'
 	import { fly } from 'svelte/transition'
 	import Score from './Score.svelte'
 	import { type Game } from '$lib/zod/schema'
 	import { Tween } from 'svelte/motion'
 	import Timer from './Timer.svelte'
-	import { MAX_ROUNDS } from '$lib/constants'
-	import paperplane from '$lib/assets/paperplane.svg?raw'
+	import modlguessr from '$lib/assets/modlguessr.svg?raw'
+	import { context } from '$lib/context.svelte'
 
 	// let { data }: PageProps = $props()
 
@@ -35,13 +34,20 @@
 	const roundIndex = $derived(roundNumber - 1)
 	const round = $derived(game?.rounds[roundIndex])
 
-	const duration = 1000
-	const total = new Tween(0, { duration: duration * 2, easing: linear, delay: duration * 5 })
+	const duration = 300
+	let total = $derived(
+		new Tween(0, { duration: duration * 2, easing: linear, delay: duration * 5 })
+	)
 
 	$effect(() => {
 		if (query.data) {
 			game = query.data
 		}
+	})
+
+	$effect(() => {
+		if (page.params.gameId)
+			total = new Tween(0, { duration: duration * 2, easing: linear, delay: duration * 5 })
 	})
 
 	$effect(() => {
@@ -111,13 +117,23 @@
 				console.error(error)
 			})
 	}
+
+	function handleError(event: Event) {
+		;(event.target as HTMLImageElement).src = '/logo/modlguessr.svg'
+	}
 </script>
 
+<header>
+	<a href="/" id="logo">{@html modlguessr}</a>
+	<a href="/" id="modlguessr">ModlGuessr</a>
+	{#if !!context.tickets}
+		<span id="tickets">{context.tickets} ticket{context.tickets === 1 ? '' : 's'}</span>
+	{/if}
+	<span id="round">Round #{roundNumber} - <Timer {round} /></span>
+	<label id="total">Total: <output style="width: 6ch;">{total.current.toFixed(0)}</output></label>
+</header>
+
 <main id="chat">
-	<header>
-		<small>Round #{roundNumber} - <Timer {round} /></small>
-		<label id="total">Total: <output style="width: 6ch;">{total.current.toFixed(0)}</output></label>
-	</header>
 	{#if messages.length === 0 && chat.status === 'ready'}
 		<h1 class="hero" out:fly={{ y: -50, duration: 200, easing: sineOut }}>
 			Ask me anything to guess who I am!
@@ -137,7 +153,7 @@
 	{/if}
 	<div id="actions">
 		<menu id="vote">
-			{#each round?.models ?? MODEL_SETS.easy[0] as model (model)}
+			{#each round?.models ?? [] as model (model)}
 				{@const provider = model.split('/')[0]}
 				{@const name = model.split('/')[1]}
 				<button
@@ -153,7 +169,7 @@
 						round?.answer !== undefined ||
 						(round?.messages?.length ?? 0) < 2}
 				>
-					<img src="/logo/{provider}.svg" alt={provider} />
+					<img src="/providers/{provider}.svg" alt={provider} onerror={handleError} />
 					<span class="provider">{provider}</span>
 					<span class="name">{name}</span>
 				</button>
@@ -164,12 +180,12 @@
 			<Score {game} {round} />
 			{#if game.ended_at}
 				<div id="end-game">
-					<a href="/leaderboard" role="button" class="primary">Leaderboard</a>
-					<a href="/play" role="button" class="primary">Play again</a>
+					<a href="/leaderboard" role="button" class="primary big">Leaderboard</a>
+					<a href="/play" role="button" class="primary big">Play again</a>
 				</div>
 			{:else}
 				<button
-					class="contrast"
+					class="contrast big"
 					onclick={async () => {
 						await convex.mutation(api.games.nextRound, {
 							gameId: page.params.gameId as Id<'games'>,
@@ -201,39 +217,67 @@
 </main>
 
 <style>
+	header {
+		display: grid;
+		grid-template-columns: auto auto auto 1fr;
+		align-items: center;
+		gap: 1rem;
+		font-size: 1rem;
+
+		#modlguessr {
+			font-weight: 900;
+			font-size: 1.25rem;
+			&:hover {
+				color: var(--blue);
+			}
+		}
+
+		#logo {
+			display: none;
+			width: 2rem;
+			height: 2rem;
+			object-fit: contain;
+		}
+
+		@media (max-width: 600px) {
+			grid-template-columns: 2rem auto auto;
+
+			#modlguessr,
+			#tickets {
+				display: none;
+			}
+
+			#logo {
+				display: block;
+			}
+		}
+
+		#total {
+			display: flex;
+			justify-self: end;
+			flex-flow: row nowrap;
+			font-size: inherit;
+			opacity: 1;
+
+			output {
+				padding: 0.25rem 0.5rem;
+				background-color: var(--grey-200);
+				border-radius: 2rem;
+				position: relative;
+				box-sizing: initial;
+				display: inline-block;
+				text-align: right;
+				font-variant-numeric: tabular-nums;
+			}
+		}
+	}
+
 	main {
 		display: flex;
 		flex-flow: column nowrap;
 		width: min(var(--narrow-page), 100%);
 		height: 100%;
 		justify-self: center;
-
-		header {
-			display: flex;
-			flex-flow: row nowrap;
-			justify-content: space-between;
-			align-items: center;
-			gap: 1rem;
-			font-size: 1.5rem;
-
-			#total {
-				display: flex;
-				flex-flow: row nowrap;
-				font-size: inherit;
-				opacity: 1;
-
-				output {
-					padding: 0.25rem 0.5rem;
-					background-color: var(--grey-200);
-					border-radius: 2rem;
-					position: relative;
-					box-sizing: initial;
-					display: inline-block;
-					text-align: right;
-					font-variant-numeric: tabular-nums;
-				}
-			}
-		}
 	}
 
 	#messages {
@@ -271,6 +315,10 @@
 		gap: 1rem;
 	}
 
+	.hero {
+		font-size: min(4rem, 10dvw);
+	}
+
 	#end-game {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
@@ -280,8 +328,12 @@
 			text-align: center;
 
 			&[href='/leaderboard'] {
-				/* Leaderboard yellow */
 				background-color: var(--yellow);
+				color: #000;
+			}
+
+			&[href='/play'] {
+				background-color: var(--blue);
 				color: #000;
 			}
 		}
@@ -293,17 +345,18 @@
 		margin: 0;
 		display: grid;
 		grid-template-columns: 1fr; /* mobile first: 1 column */
-		gap: 1rem;
+		font-size: min(1.05em, 3.5vw);
+		gap: 1em;
 		margin-top: auto;
 
 		button {
 			display: grid;
 			grid-template-columns: 2rem auto 1fr;
-			font-size: 1.05em;
 			text-align: start;
-			gap: 0.25rem 0.5rem;
-			padding: 0.5rem 1rem;
-			border-radius: 3rem;
+			font-size: inherit;
+			gap: 0.25em 0.5em;
+			padding: 0.5em 1em;
+			border-radius: 3em;
 			--color: var(--grey-100);
 			border: 1px solid var(--color);
 			background-color: color-mix(in oklab, var(--color) 10%, transparent);
@@ -322,6 +375,7 @@
 				height: 2rem;
 				aspect-ratio: 1;
 				justify-self: center;
+				border-radius: 0.5rem;
 			}
 
 			.name,
@@ -353,6 +407,7 @@
 
 		textarea {
 			padding: 1rem 4rem 1rem 1.5rem;
+			max-height: 50dvh;
 		}
 
 		#send {

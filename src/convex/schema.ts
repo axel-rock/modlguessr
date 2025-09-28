@@ -1,4 +1,4 @@
-import { game } from '$lib/zod/schema'
+import { game, model } from '$lib/zod/schema'
 import { defineTable, defineSchema } from 'convex/server'
 import { zodOutputToConvex } from 'convex-helpers/server/zod'
 import { v } from 'convex/values'
@@ -10,4 +10,5 @@ export default defineSchema({
 		user_id: v.string(),
 		balance: v.optional(v.number()),
 	}).index('by_user', ['user_id']),
+	models: defineTable(zodOutputToConvex(model)),
 })

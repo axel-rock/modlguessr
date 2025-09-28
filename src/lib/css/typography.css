@@ -6,7 +6,7 @@
 
 html {
 	hanging-punctuation: first last;
-	font-size: clamp(12px, 2dvw, 18px);
+	font-size: clamp(14px, 2dvw, 18px);
 	/* font-size: clamp(16px, 2vw, 22px); */
 	/* font-family:
 		Inter,

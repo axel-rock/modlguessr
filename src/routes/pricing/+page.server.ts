@@ -3,7 +3,7 @@ import { api } from '$convex/api'
 import { error } from '@sveltejs/kit'
 import type { Product } from 'autumn-js'
 
-// export const prerender = true
+export const prerender = true
 
 export const load = (async ({ locals: { convex } }) => {
 	const { data } = await convex.action(api.autumn.listProducts, {})

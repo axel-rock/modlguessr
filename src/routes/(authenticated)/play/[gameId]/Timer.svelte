@@ -18,7 +18,7 @@
 </script>
 
 {#if !round?.started_at}
-	<span>Waiting for the first message</span>
+	<span>Ready</span>
 {:else if round.ended_at}
 	{@const duration = (round.ended_at - round.started_at) / 1000}
 	<span>{duration.toFixed(1)}s</span>

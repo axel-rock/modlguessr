@@ -1,16 +1,6 @@
 <footer>
 	<div class="grid">
 		<div class="tools">
-			<a href="/about">About</a>
-			<a href="/blog">Devblog</a>
-			<a href="/models">Models</a>
-			<span>Source code:</span>
-			<a href="https://github.com/axel-rock/modlguessr" target="_blank">
-				<img src="/logo/github.svg" alt="GitHub" />
-				<span>GitHub</span>
-			</a>
-		</div>
-		<div class="tools">
 			<span>Powered by:</span>
 			<a href="https://svelte.dev/" target="_blank">
 				<img src="/logo/svelte.svg" alt="Svelte" />
@@ -41,13 +31,23 @@
 				<span>Vercel AI</span></a
 			>
 		</div>
+		<div class="tools">
+			<a href="/about">About</a>
+			<a href="/blog">Devblog</a>
+			<a href="/models">Models</a>
+			<span>Source code:</span>
+			<a href="https://github.com/axel-rock/modlguessr" target="_blank">
+				<img src="/logo/github.svg" alt="GitHub" />
+				<span>GitHub</span>
+			</a>
+		</div>
 	</div>
 </footer>
 
 <style>
 	footer {
 		--icon-size: 1.75rem;
-		--background-color: color-mix(in oklab, var(--grey-100) 50%, var(--grey-0));
+		--background-color: color-mix(in oklab, var(--grey-100) 75%, var(--grey-0));
 
 		align-items: start;
 		justify-content: space-evenly;

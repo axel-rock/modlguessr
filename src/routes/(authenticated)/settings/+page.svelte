@@ -159,10 +159,16 @@
 			align-items: end;
 			width: 100%;
 			display: grid;
-			grid-template-columns: 1fr auto;
+			grid-template-columns: 1fr;
 
 			#username {
 				font-size: 1.5rem;
+			}
+		}
+
+		@media (min-width: 600px) {
+			form {
+				grid-template-columns: 1fr auto;
 			}
 		}
 	}

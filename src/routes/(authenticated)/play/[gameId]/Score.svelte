@@ -27,6 +27,7 @@
 </script>
 
 <div id="score" class:hidden={!round.score}>
+	<span>Score:</span>
 	<div id="calc">
 		(<output
 			aria-labelledby="Base points for correct answer"
@@ -57,9 +58,21 @@
 	#score {
 		display: flex;
 		flex-flow: row wrap;
-		justify-content: space-between;
-		font-size: 1.5em;
+		justify-content: center;
+		align-items: center;
+		font-size: min(1.5rem, 4.75dvw);
 		gap: 1rem;
+
+		@media (min-width: 600px) {
+			width: 100%;
+			justify-content: space-between;
+		}
+
+		@media (max-width: 600px) {
+			& > span {
+				display: none;
+			}
+		}
 
 		&.hidden {
 			visibility: hidden;

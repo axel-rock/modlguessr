@@ -55,29 +55,31 @@
 	</div>
 {/if}
 
-<header>
-	<nav>
-		<a href="/">ModlGuessr</a>
-		<a href="/leaderboard">Leaderboard</a>
-	</nav>
-	<a href="/play" id="play">
-		{@html play}
-	</a>
-	<nav>
-		{#if !!tickets}
-			<span>{tickets} tickets</span>
-		{/if}
-		<a href="/pricing">Pricing</a>
+{#if page.route.id !== '/(authenticated)/play/[gameId]'}
+	<header>
+		<nav>
+			<a href="/">ModlGuessr</a>
+			<a href="/leaderboard">Leaderboard</a>
+		</nav>
+		<a href="/play" id="play">
+			{@html play}
+		</a>
+		<nav>
+			{#if !!tickets}
+				<span>{tickets} ticket{tickets === 1 ? '' : 's'}</span>
+			{/if}
+			<a href="/pricing">Pricing</a>
 
-		{#if user}
-			<button id="user-menu-button" class="link auth" popovertarget="user-menu">
-				<img src={user.image} alt={user.name} referrerPolicy="no-referrer" />
-			</button>
-		{:else}
-			<a href="/login">Sign in</a>
-		{/if}
-	</nav>
-</header>
+			{#if user}
+				<button id="user-menu-button" class="link auth" popovertarget="user-menu">
+					<img src={user.image} alt={user.name} referrerPolicy="no-referrer" />
+				</button>
+			{:else}
+				<a href="/login">Sign in</a>
+			{/if}
+		</nav>
+	</header>
+{/if}
 
 {#if user}
 	<menu id="user-menu" popover="auto">
@@ -109,7 +111,7 @@
 {@render children?.()}
 
 <!-- Don't show footer on play page, the chat textarea takes up the bottom space -->
-{#if !page.route.id?.startsWith('/(authenticated)/play')}
+{#if page.route.id !== '/(authenticated)/play/[gameId]'}
 	<Footer />
 {/if}
 
@@ -135,17 +137,44 @@
 		display: grid;
 		grid-template-columns: 1fr auto 1fr;
 		align-items: center;
-		justify-content: space-between;
 
 		a[href='/'] {
 			font-weight: 900;
 			font-size: 1.25rem;
+			&:hover {
+				color: var(--blue);
+			}
+		}
+
+		a[href='/leaderboard']:hover {
+			color: var(--yellow);
+		}
+		a[href='/pricing']:hover {
+			color: var(--pink);
 		}
 
 		nav {
-			display: flex;
+			display: grid;
 			align-items: center;
-			gap: 0.5rem;
+			gap: 0.5rem 1rem;
+
+			&:last-child {
+				justify-self: end;
+				grid-template-columns: auto 1fr;
+				justify-items: end;
+				button:has(img) {
+					grid-row: 1 / span 2;
+					grid-column: 2;
+				}
+			}
+		}
+
+		@media (min-width: 600px) {
+			nav {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
 		}
 
 		.auth {
@@ -162,8 +191,8 @@
 	}
 
 	#play {
-		font-weight: 600;
-		background-color: unset;
+		display: grid;
+		place-items: center;
 		transition: all 0.1s ease;
 		&:hover {
 			scale: 1.05;
