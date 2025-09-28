@@ -65,7 +65,7 @@
 			{@html play}
 		</a>
 		<nav>
-			{#if !!tickets}
+			{#if typeof tickets === 'number'}
 				<span>{tickets} ticket{tickets === 1 ? '' : 's'}</span>
 			{/if}
 			<a href="/pricing">Pricing</a>
