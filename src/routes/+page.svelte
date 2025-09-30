@@ -6,9 +6,12 @@
 	import { Tween } from 'svelte/motion'
 	import InteractiveExample from './InteractiveExample.svelte'
 	import play from '$lib/assets/play.svg?raw'
+	import CompareModels from '$lib/components/CompareModels.svelte'
 	// let { data } = $props()
 
 	const tokensQuery = useQuery(api.stats.tokens, {})
+	const modelsQuery = useQuery(api.models.list, {})
+	const models = $derived(modelsQuery.data ?? [])
 
 	let tokens = $state(new Tween(0, { duration: 5000, easing: expoInOut }))
 
@@ -76,6 +79,12 @@
 			</div> -->
 		</div>
 	</section>
+
+	{#if models}
+		<section>
+			<CompareModels {models} />
+		</section>
+	{/if}
 
 	<section>
 		<h2 class="hero">What players say</h2>

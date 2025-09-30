@@ -1,22 +1,7 @@
+import { api } from '$convex/api'
 import type { PageServerLoad } from './$types'
 
-export type AIModel = {
-	id: string
-	name: string
-	description: string
-	owned_by: string
-	type: 'language' | 'image' | 'document' | 'embedding'
-	context_window: number
-	max_tokens: number
-	pricing: {
-		input: number
-		output: number
-	}
-	created: number
-}
-
-export const load = (async ({ fetch }) => {
-	const modelsRequest = await fetch(`https://ai-gateway.vercel.sh/v1/models`)
-	const { data: models } = (await modelsRequest.json()) as { data: AIModel[] }
+export const load = (async ({ locals: { convex } }) => {
+	const models = await convex.query(api.models.list, {})
 	return { models }
 }) satisfies PageServerLoad

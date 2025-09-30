@@ -33,8 +33,28 @@ export const insert = internalMutation({
 	},
 	handler: async (ctx, { models }) => {
 		for (const model of models) {
+			const existing = await ctx.db
+				.query('models')
+				.withIndex('by_modelId', (q) => q.eq('id', model.id))
+				.first()
+			if (existing) continue
 			await ctx.db.insert('models', model)
 		}
+	},
+})
+
+export const update = internalMutation({
+	args: {
+		id: v.string(),
+		analysis: v.string(),
+	},
+	handler: async (ctx, { id, analysis }) => {
+		const existing = await ctx.db
+			.query('models')
+			.withIndex('by_modelId', (q) => q.eq('id', id))
+			.first()
+		if (!existing) return
+		await ctx.db.patch(existing._id, { analysis })
 	},
 })
 

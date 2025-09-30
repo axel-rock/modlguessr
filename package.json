@@ -1,7 +1,7 @@
 {
   "name": "modlguessr",
   "author": "Axel Rock",
-  "version": "0.31.11",
+  "version": "0.31.12",
   "type": "module",
   "scripts": {
     "dev": "concurrently --names 'svelte,convex' --prefix-colors \"#f96743,#F3B01C\" \"vite dev --host\" \"pnpx convex dev\"",
@@ -23,6 +23,7 @@
     "@eslint/compat": "^1.2.5",
     "@eslint/js": "^9.22.0",
     "@mmailaender/convex-better-auth-svelte": "^0.0.5",
+    "@modelcontextprotocol/sdk": "^1.18.2",
     "@sveltejs/adapter-vercel": "^5.6.3",
     "@sveltejs/kit": "^2.22.0",
     "@sveltejs/vite-plugin-svelte": "^6.0.0",

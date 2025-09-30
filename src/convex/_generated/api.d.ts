@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as autumn from "../autumn.js";
+import type * as comparison from "../comparison.js";
 import type * as crons from "../crons.js";
 import type * as email from "../email.js";
 import type * as games from "../games.js";
@@ -40,6 +41,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   autumn: typeof autumn;
+  comparison: typeof comparison;
   crons: typeof crons;
   email: typeof email;
   games: typeof games;

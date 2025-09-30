@@ -39,6 +39,7 @@ export const model = z.object({
 		specificationVersion: z.literal('v2'),
 	}),
 	modelType: z.enum(['language', 'image', 'embedding']),
+	analysis: z.optional(z.string()),
 }) satisfies z.ZodType<Model>
 
 const TextUIPartSchema = z.object({

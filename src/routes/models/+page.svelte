@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ModelButton from '$lib/components/ModelButton.svelte'
+	import CompareModels from '$lib/components/CompareModels.svelte'
 	import type { PageProps } from './$types'
 
 	let { data }: PageProps = $props()
@@ -11,6 +12,10 @@
 
 <main>
 	<h1 class="hero">Models</h1>
+
+	<CompareModels models={data.models} />
+
+	<hr />
 
 	<p>
 		Here is a list of all the models available on the <a
@@ -29,8 +34,9 @@
 				<div>
 					<span class="name"><b>{model.name}</b> <span class="id">{model.id}</span></span>
 					<span class="description">{model.description}</span>
-
-					<ModelButton modelId={model.id} />
+					<!-- <span>
+						<ModelButton modelId={model.id} />
+					</span> -->
 				</div>
 			</li>
 		{/each}
@@ -58,6 +64,7 @@
 
 		div {
 			display: grid;
+			gap: 0.5rem;
 		}
 	}
 </style>
