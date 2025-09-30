@@ -85,12 +85,12 @@
 	{#if model1Analysis && model2Analysis && comparison}
 		<details>
 			<summary>Model 1 Analysis</summary>
-			<p>{model1Analysis}</p>
+			<div>{@html marked(model1Analysis)}</div>
 		</details>
 
 		<details>
 			<summary>Model 2 Analysis</summary>
-			<p>{model2Analysis}</p>
+			<div>{@html marked(model2Analysis)}</div>
 		</details>
 
 		<details class="span-all" open>
