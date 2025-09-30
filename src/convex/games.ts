@@ -345,9 +345,10 @@ export const stream = httpAction(async (ctx, request) => {
 	// Return the UI message stream immediately to the browser
 	return result.toUIMessageStreamResponse({
 		headers: {
-			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Origin': process.env.BETTER_AUTH_URL!,
 			'Access-Control-Allow-Methods': 'POST, OPTIONS',
-			'Access-Control-Allow-Headers': 'Content-Type',
+			'Access-Control-Allow-Headers':
+				'Content-Type, User-Agent, Accept, Accept-Language, Accept-Encoding',
 			Vary: 'Origin',
 		},
 	})

@@ -10,6 +10,10 @@ export const load = (async ({ cookies, locals: { convex } }) => {
 				cookies.delete('referral_code', { path: '/' })
 			}
 		} catch (error) {
+			console.error({ code: error.code, message: error.message })
+			// if (error.message.includes('already redeemed a code in this referral program')) {
+			//   cookies.delete('referral_code', { path: '/' })
+			// }
 			console.error(error)
 		}
 	}

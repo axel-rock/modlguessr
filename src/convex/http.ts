@@ -6,7 +6,7 @@ import { httpAction } from '$convex/server'
 
 const http = httpRouter()
 
-authComponent.registerRoutes(http, createAuth)
+authComponent.registerRoutes(http, createAuth, { cors: true })
 
 http.route({
 	path: '/game-stream',
@@ -23,9 +23,10 @@ http.route({
 			new Response(null, {
 				status: 200,
 				headers: {
-					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Origin': process.env.BETTER_AUTH_URL!,
 					'Access-Control-Allow-Methods': 'POST, OPTIONS',
-					'Access-Control-Allow-Headers': 'Content-Type',
+					'Access-Control-Allow-Headers':
+						'Content-Type, User-Agent, Accept, Accept-Language, Accept-Encoding',
 					'Access-Control-Max-Age': '86400',
 				},
 			})

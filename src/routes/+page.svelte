@@ -164,8 +164,9 @@
 	}
 
 	p {
-		margin: 0 auto;
+		margin: 0.5rem auto;
 	}
+
 	.space {
 		margin-block: 2rem;
 	}
