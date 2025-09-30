@@ -58,7 +58,6 @@ As the main goal is to explore the stack, here are some features we can implemen
   - [x] Show and track feature (tickets to play a game)
   - [x] Implement and test payment
 - [x] CD Pipeline
-  - [x] Deploy on Vercel
   - [x] Auth is working
   - [x] Convex prod is used
   - [x] Autumn prod is used

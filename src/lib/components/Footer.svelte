@@ -30,10 +30,6 @@
 				<img src="/logo/vapi.svg" alt="Vapi" />
 				<span>Vapi</span></a
 			>
-			<a href="https://vercel.com/" target="_blank">
-				<img src="/logo/vercel.svg" alt="Vercel" />
-				<span>Vercel AI</span></a
-			>
 		</div>
 		<div class="tools">
 			<a href="/about">About</a>
@@ -97,14 +93,7 @@
 			}
 
 			@media (prefers-color-scheme: dark) {
-				&:is(
-						[href*='vercel'],
-						[href*='better-auth'],
-						[href*='github'],
-						[href*='openai'],
-						[href*='resend']
-					)
-					img {
+				&:is([href*='better-auth'], [href*='github'], [href*='openai'], [href*='resend']) img {
 					filter: invert(1);
 				}
 			}
