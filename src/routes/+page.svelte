@@ -163,6 +163,9 @@
 		}
 	}
 
+	p {
+		margin: 0 auto;
+	}
 	.space {
 		margin-block: 2rem;
 	}

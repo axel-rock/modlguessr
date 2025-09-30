@@ -2,7 +2,8 @@ import { api } from '$convex/api'
 import { redirect } from '@sveltejs/kit'
 import type { PageServerLoad } from './$types'
 
-export const load = (async ({ params: { code }, locals: { convex }, url }) => {
+export const load = (async ({ params: { code }, locals: { convex }, url, cookies }) => {
+	cookies.set('referral_code', code, { path: '/' })
 	const user = await convex.query(api.auth.getCurrentUser, {})
 
 	if (user) {
