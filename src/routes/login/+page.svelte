@@ -5,6 +5,7 @@
 	import { authClient } from '$lib/auth'
 	import type { PageProps } from './$types'
 	import { goto } from '$app/navigation'
+	import { context } from '$lib/context.svelte'
 
 	let { data }: PageProps = $props()
 
@@ -18,6 +19,10 @@
 	$effect(() => {
 		console.log('userQuery.data', userQuery.data, redirect)
 		if (userQuery.data) goto(redirect)
+	})
+
+	$effect(() => {
+		if (context.user) goto(redirect)
 	})
 </script>
 
