@@ -41,6 +41,37 @@
 		})
 		if (data?.url) window.location.href = data.url
 	}
+
+	// Redeem referral code once user is logged in
+	$effect(() => {
+		if (data.referralCode && user) {
+			// First, redeem the code via Convex (where auth context is guaranteed)
+			convex
+				.action(api.autumn.redeemReferralCode, { code: data.referralCode })
+				.then((result) => {
+					if (result.data) {
+						console.log('✅ Referral code redeemed')
+						// Show success message
+						params.update({ message: 'Referral code redeemed! You got 5 extra tickets!' })
+						// Refresh tickets to show the new count
+						convex.action(api.tickets.refresh, {})
+					} else if (result.error) {
+						console.error('❌ Failed to redeem:', result.error.message)
+						// Show error if it's not "already redeemed"
+						if (!result.error.message.includes('already redeemed')) {
+							params.update({ message: result.error.message })
+						}
+					}
+				})
+				.catch((error) => {
+					console.error('❌ Error redeeming referral code:', error)
+				})
+				.finally(() => {
+					// Always delete the cookie after attempting redemption
+					fetch('/api/referral/redeem', { method: 'POST' })
+				})
+		}
+	})
 </script>
 
 <svelte:head>
