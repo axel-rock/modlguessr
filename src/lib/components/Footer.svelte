@@ -60,6 +60,7 @@
 		& > div.grid {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
+			margin: 0 auto;
 			width: 100%;
 			max-width: var(--narrow-page);
 			justify-self: center;
