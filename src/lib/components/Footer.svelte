@@ -30,6 +30,10 @@
 				<img src="/logo/vapi.svg" alt="Vapi" />
 				<span>Vapi</span></a
 			>
+			<a href="https://www.firecrawl.dev/" target="_blank">
+				<img src="/logo/firecrawl.svg" alt="Firecrawl" />
+				<span>Firecrawl</span>
+			</a>
 		</div>
 		<div class="tools">
 			<a href="/about">About</a>
@@ -40,6 +44,7 @@
 				<img src="/logo/github.svg" alt="GitHub" />
 				<span>GitHub</span>
 			</a>
+			<span></span>
 			<span></span>
 			<span>Privacy policy / Terms of service</span>
 			<span class="copyright">Copyright © 2025 ModlGuessr</span>
@@ -90,6 +95,11 @@
 			}
 
 			&[href*='github'] img {
+				scale: 0.8;
+			}
+
+			&[href*='firecrawl'] img {
+				height: 1.5rem;
 				scale: 0.8;
 			}
 
