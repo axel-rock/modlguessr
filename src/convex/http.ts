@@ -23,7 +23,7 @@ http.route({
 			new Response(null, {
 				status: 200,
 				headers: {
-					'Access-Control-Allow-Origin': process.env.BETTER_AUTH_URL!,
+					'Access-Control-Allow-Origin': '*',
 					'Access-Control-Allow-Methods': 'POST, OPTIONS',
 					'Access-Control-Allow-Headers':
 						'Content-Type, User-Agent, Accept, Accept-Language, Accept-Encoding',
